@@ -79,14 +79,16 @@ while (d < params$ND) {
 }
 
 
-if (params$output_format == "csv") {
+if (params$csv == TRUE) {
   if (params$population_report_file == TRUE) {
     write.csv(subject, 'Outcomes.csv', row.names = FALSE)
   }
   if (params$detailed_file == TRUE) {
     write.csv(cbind(subject, subjectY), 'Detailed.csv', row.names = FALSE)
   }
-} else if (params$output_format == "sas") {
+} 
+
+if (params$sas == TRUE) {
   library(haven)
   if (params$population_report_file == TRUE) {
     write_sas(subject, 'Outcomes.sas7bdat')
@@ -96,8 +98,6 @@ if (params$output_format == "csv") {
     names(detailed) <- c(names(subject), paste0("D",seq(0,params$ND)))
     write_sas(detailed, 'Detailed.sas7bdat')
   }
-} else {
-  print("Not a valid output format. Quitting!")
 }
 
 
