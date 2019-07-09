@@ -13,7 +13,7 @@ readParams = function(filename) {
   para$period_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-period for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$seasonal_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-total for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$daily_overall_file <- ifelse(strsplit(Y[grep("Incidence-daily means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
-  para$monthly_overall_file <- ifelse(strsplit(Y[grep("Incidence-monthly means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
+  para$monthly_overall_file <- ifelse(strsplit(Y[grep("Incidence-period means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$seasonal_overall_file <- ifelse(strsplit(Y[grep("Incidence-total means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$population_report_file <- ifelse(strsplit(Y[grep("Outcomes for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$timestamp <- ifelse(strsplit(Y[grep("Add timestamp to output file names",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
@@ -30,7 +30,7 @@ readParams = function(filename) {
   para$alpha_0 <- as.numeric(strsplit(Y[grep("Probability of vaccination for X=0",Y)],',')[[1]][2])
   para$beta_d01 <- as.numeric(strsplit(Y[grep("Daily probability of infection for V=0 X=1",Y)],',')[[1]][2])
   para$theta_dx <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection for V=1",Y)],',')[[1]][2])
-  para$theta <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection for X=0",Y)],',')[[1]][2])
+  para$phi <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection for X=0",Y)],',')[[1]][2])
   
   
   return(para)

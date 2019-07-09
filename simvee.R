@@ -4,7 +4,7 @@
 source("readParams.R")
 set.seed(1234)
 # Read parameters from input files
-params <- readParams("SimVE_input.csv")
+params <- readParams("SimVEE_input.csv")
 
 ## Filenames
 #output_files = c('Outcomes.csv', 'detailed.csv')
@@ -28,8 +28,8 @@ subjectY[,1] <- rep(0, params$N)
 d = 0
 
 params$beta_d11 = params$beta_d01 * params$theta_dx
-params$beta_d00 = params$beta_d01 * params$theta
-params$beta_d10 = params$beta_d01 * params$theta_dx * params$theta
+params$beta_d00 = params$beta_d01 * params$phi
+params$beta_d10 = params$beta_d01 * params$theta_dx * params$phi
 
 
 ## Set value of X for each subject
@@ -46,7 +46,7 @@ for (i in ID) {
 }
 
 ## This function returns the beta value that should be applied to a
-#  subject based on X and Y values.
+#  subject based on X and V values.
 getBetaForSubject = function (sub) {
   X = sub$X
   V = sub$V
