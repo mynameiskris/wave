@@ -7,6 +7,7 @@ readParams = function(filename) {
   para$rseed <- as.numeric(strsplit(Y[grep("Seed",Y)],',')[[1]][2])
   para$all_or_no_vaccine <- as.numeric(strsplit(Y[grep("Leaky or all-or-none vaccine",Y)],',')[[1]][2])
   
+  para$output_format <- as.character(strsplit(Y[grep("Output file format",Y)],',')[[1]][2]) 
   para$inputsfile <- ifelse(strsplit(Y[grep("Input and calculated parameters",Y)],',')[[1]][2]=="yes",TRUE,FALSE) 
   para$detailed_file <- ifelse(strsplit(Y[grep("Detailed for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$daily_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-daily for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
