@@ -27,9 +27,9 @@ subjectY[,1] <- rep(0, params$N)
 # Day
 d = 0
 
-params$beta_d11 = params$beta_d01 * params$theta_dx
+params$beta_d11 = params$beta_d01 * params$theta_d
 params$beta_d00 = params$beta_d01 * params$phi
-params$beta_d10 = params$beta_d01 * params$theta_dx * params$phi
+params$beta_d10 = params$beta_d01 * params$theta_d * params$phi
 
 
 ## Set value of X for each subject
@@ -65,7 +65,7 @@ while (d < params$ND) {
     if (subjectY[i, d] == 0) {
       subjectY[i, (d+1)] = as.numeric(runif(1) < getBetaForSubject(subject[i,])) 
       if (subjectY[i, (d+1)] == 1) {
-        subject[i, "DINF"] = (d + 1)
+        subject[i, "DINF"] = d
         NDINF[subject[i,"X"], subject[i,"V"], d] = NDINF[subject[i,"X"], subject[i,"V"], d] + 1
       }
     }
