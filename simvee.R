@@ -78,13 +78,17 @@ while (d < params$ND) {
   }
 }
 
+if (params$detailed_file == TRUE) {
+  detailed <- cbind(subject, subjectY)
+  names(detailed) <- c(names(subject), paste0("D",seq(0,params$ND)))
+}
 
 if (params$csv == TRUE) {
   if (params$population_report_file == TRUE) {
     write.csv(subject, paste0('Outcomes_',params$title,'.csv'), row.names = FALSE)
   }
   if (params$detailed_file == TRUE) {
-    write.csv(cbind(subject, subjectY), paste0('Detailed_',params$title,'.csv'), row.names = FALSE)
+    write.csv(detailed, paste0('Detailed_',params$title,'.csv'), row.names = FALSE)
   }
 } 
 
@@ -94,8 +98,6 @@ if (params$sas == TRUE) {
     write_sas(subject, paste0('Outcomes_',params$title,'.sas7bdat'))
   }
   if (params$detailed_file == TRUE) {
-    detailed <- cbind(subject, subjectY)
-    names(detailed) <- c(names(subject), paste0("D",seq(0,params$ND)))
     write_sas(detailed, paste0('Detailed_',params$title,'.sas7bdat'))
   }
 }
