@@ -21,6 +21,8 @@ simvee <- function(params, simNum) {
   
   # Day
   d = 0
+  d_period = 0
+  period = 1
   
   params$beta_d11 = params$beta_d01 * params$theta_d
   params$beta_d00 = params$beta_d01 * params$phi
@@ -54,10 +56,15 @@ simvee <- function(params, simNum) {
   ## Iterate over number of days.
   while (d < params$ND) {
     d = d + 1
+    d_period = d_period + 1
+    
+    cat(d)
+    print(d_period)
+    print(period)
     
     for (i in ID) {
       if (subjectY[i, d] == 0) {
-        subjectY[i, (d+1)] = as.numeric(runif(1) < getBetaForSubject(subject[i,])) 
+        subjectY[i, (d+1)] = as.numeric(runif(1) < getBetaForSubject(subject[i,])[period]) 
         if (subjectY[i, (d+1)] == 1) {
           subject[i, "DINF"] = d
           NDINF[(subject[i,"X"]+1), (subject[i,"V"]+1), d] = 
@@ -70,6 +77,10 @@ simvee <- function(params, simNum) {
       if (subjectY[i, d] == 2) {
         subjectY[i, (d+1)] = 2
       }
+    }
+    if(d_period == params$NDJ){
+      d_period = 0
+      period = period + 1
     }
   }
   return(list(subject=subject,subjectY=subjectY,NDINF=NDINF))
