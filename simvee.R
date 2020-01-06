@@ -1,11 +1,4 @@
 
-library(dplyr)
-# Source functions from other files
-source("readParams.R")
-set.seed(1234)
-# Read parameters from input files
-params <- readParams("SimVEE_input.csv")
-
 ## Filenames
 #output_files = c('Outcomes.csv', 'detailed.csv')
 
