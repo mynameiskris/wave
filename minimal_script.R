@@ -14,3 +14,5 @@ mysims <- run_sim(params)
 
 # write output to file
 write_output(params, mysims, path = "output/")
+
+# post-processing (still needs to be coded...)
