@@ -12,10 +12,10 @@ readParams = function(filename) {
   para$inputsfile <- ifelse(strsplit(Y[grep("Input and calculated parameters",Y)],',')[[1]][2]=="yes",TRUE,FALSE) 
   para$detailed_file <- ifelse(strsplit(Y[grep("Detailed for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$daily_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-daily for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
-  para$period_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-period for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
+# para$period_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-period for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$seasonal_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-total for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$daily_overall_file <- ifelse(strsplit(Y[grep("Incidence-daily means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
-  para$period_overall_file <- ifelse(strsplit(Y[grep("Incidence-period means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
+# para$period_overall_file <- ifelse(strsplit(Y[grep("Incidence-period means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$seasonal_overall_file <- ifelse(strsplit(Y[grep("Incidence-total means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$population_report_file <- ifelse(strsplit(Y[grep("Outcomes for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$timestamp <- ifelse(strsplit(Y[grep("Add timestamp to output file names",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
@@ -30,9 +30,21 @@ readParams = function(filename) {
   para$pai <- as.numeric(strsplit(Y[grep("Probability of X=1",Y)],',')[[1]][2])
   para$alpha_1 <- as.numeric(strsplit(Y[grep("Probability of vaccination for X=1",Y)],',')[[1]][2])
   para$alpha_0 <- as.numeric(strsplit(Y[grep("Probability of vaccination for X=0",Y)],',')[[1]][2])
-  para$beta_d01 <- as.numeric(strsplit(Y[grep("Daily probability of infection for V=0 X=1",Y)],',')[[1]][2])
-  para$theta_d <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection for V=1",Y)],',')[[1]][2])
-  para$phi <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection for X=0",Y)],',')[[1]][2])
+  if (identical(Y[grep("Daily probability of infection for V=0 X=1",Y)], character(0))) {
+    for (i in 1:para$NJ){
+      para$beta_d01[i] <- as.numeric(strsplit(Y[grep("Daily probabilities of infection when V=0 X=1",Y)+i],',')[[1]][3])
+    }
+  } else {
+    para$beta_d01 <- as.numeric(strsplit(Y[grep("Daily probability of infection for V=0 X=1",Y)],',')[[1]][2])
+  }
+  if (identical(Y[grep("Multiplier for daily probability of infection for V=1",Y)], character(0))) {
+    for (i in 1:para$NJ){
+      para$theta_d[i] <- as.numeric(strsplit(Y[grep("Daily multiplier for daily probability of infection when V=1 for each period",Y)+i],',')[[1]][3])
+    }
+  } else {
+    para$theta_d <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection for V=1",Y)],',')[[1]][2])
+  }
+  para$phi <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection when X=0",Y)],',')[[1]][2])
   
   
   return(para)
