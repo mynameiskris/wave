@@ -10,7 +10,4 @@ set.seed(1234)
 params <- readParams("input/SimVEE_input__Test_03.csv")
 
 # run simulation
-mysims <- run_sim(params)
-
-# write output to file
-write_output(params, mysims, path = "output/")
+sim_results <- run_sim(params, path = "output/")
