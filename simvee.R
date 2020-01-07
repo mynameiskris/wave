@@ -58,10 +58,8 @@ simvee <- function(params, simNum) {
     d = d + 1
     d_period = d_period + 1
     
-    cat(d)
-    print(d_period)
-    print(period)
-    
+    # print(paste("Day",d, "Period", period, "Day within period", d_period))
+
     for (i in ID) {
       if (subjectY[i, d] == 0) {
         subjectY[i, (d+1)] = as.numeric(runif(1) < getBetaForSubject(subject[i,])[period]) 
