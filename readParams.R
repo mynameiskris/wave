@@ -1,6 +1,6 @@
 readParams = function(filename) {
   para <- list()
-  Y <- readLines(filename)
+  Y <- readLines(filename, warn = FALSE)
   
   para$title <- strsplit(Y[grep("Title",Y)],',')[[1]][2]
   para$sim <- as.numeric(strsplit(Y[grep("Number of simulations",Y)],',')[[1]][2])
