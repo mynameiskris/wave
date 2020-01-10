@@ -126,17 +126,17 @@ run_sim <- function(params, path = getwd()){
   # write simulation results to different output files
   if (params$csv == TRUE) {
     if (params$population_report_file == TRUE) {
-      write.csv(population_report, paste0(path,'Outcomes_',params$title,'.csv'), row.names = FALSE)
+      write.csv(population_report, paste0(path,'/Outcomes_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$detailed_file == TRUE) {
-      write.csv(detailed, paste0(path,'Detailed_',params$title,'.csv'), row.names = FALSE)
+      write.csv(detailed, paste0(path,'/Detailed_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$daily_each_sim_file == TRUE) {
-      write.csv(incidence, paste0(path,'Daily_',params$title,'.csv'), row.names = FALSE)
+      write.csv(incidence, paste0(path,'/Daily_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$daily_overall_file == TRUE) {
       inc_daily_overall <- g_inc %>% group_by(Day,Period) %>% summarise_all(mean, na.rm = TRUE) %>% select(-Sim)
-      write.csv(inc_daily_overall, paste0(path,'Daily_overall_',params$title,'.csv'), row.names = FALSE)
+      write.csv(inc_daily_overall, paste0(path,'/Daily_overall_',params$title,'.csv'), row.names = FALSE)
     }
     # if (params$period_each_sim_file == TRUE) {
     #   inc_period_sim <- g_inc %>% group_by(Sim,Period) %>% summarise_all(sum, na.rm = TRUE) %>%
@@ -150,13 +150,13 @@ run_sim <- function(params, path = getwd()){
     # }
     if (params$seasonal_each_sim_file == TRUE) {
       inc_seasonal_sim <- g_inc %>% group_by(Sim) %>% summarise_all(sum, na.rm = TRUE) %>% select(c(-Day,-Period))
-      write.csv(inc_seasonal_sim, paste0(path,'Seasonal_',params$title,'.csv'), row.names = FALSE)
+      write.csv(inc_seasonal_sim, paste0(path,'/Seasonal_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$seasonal_overall_file == TRUE) {
       inc_seasonal_overall <- g_inc %>% group_by(Sim) %>% summarise_all(sum, na.rm = TRUE) %>% 
                               select(c(-Day,-Period)) %>%  summarize_all(mean, na.rm=TRUE) %>%
                               select(c(-Sim))
-      write.csv(inc_seasonal_overall, paste0(path,'Seasonal_overall_',params$title,'.csv'), row.names = FALSE)
+      write.csv(inc_seasonal_overall, paste0(path,'/Seasonal_overall_',params$title,'.csv'), row.names = FALSE)
     }
   } 
   # return incidence tibble
