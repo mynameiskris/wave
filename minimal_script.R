@@ -10,4 +10,6 @@ set.seed(1234)
 params <- readParams("SimVEE_input__Test_03.csv")
 
 # run simulation
+#   there is an optional path argument for run_sim(params, path = )
+#   if no path is specified, it will default to current working directory
 mysims <- run_sim(params)
