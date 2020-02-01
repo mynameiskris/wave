@@ -3,26 +3,31 @@ library(foreign)
 library(survival)
 library(splines)
 # read in data
-data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/datadmp1")
-data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/datadmp2")
-data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/towork.s")
+# data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/datadmp1")
+# data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/datadmp2")
+# data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/towork.s")
 chol.dat <- read.csv(file="~/Dropbox/Kylie/Projects/VE Waning/code/chol4/choldat.csv", na.strings="")
 
+# fit ordinary Cox propotional hazards model
 chol.coxmod <- coxph(Surv(cpdays) ~ cpwc + cpbswc + cpageind, data=chol.dat)
+# test the proportional hazards assumption
+# this step also computes the Schoenfeld residuals ($y)
 chol.tdhaz <- cox.zph(chol.coxmod, transform = "identity")
 
+plot.cox.zph.ve3(chol.tdhaz, var = c("cpwc","cpbswc"))
+
 plot.cox.zph.ve2 <- function(x, df = 4, nsmo = 40, var,...){
-xx <- x$x
-yy <- x$y
+xx <- x$x # transformed time axis from cox.zph()
+yy <- x$y # Schoenfeld residuals computed by cox.zph()
     d <- nrow(yy)
     df <- max(df)
     nvar <- ncol(yy)
     pred.x <- seq(from = min(xx), to = max(xx), length = nsmo)
     temp <- c(pred.x, xx)
-    lmat <- ns(temp, df = df, intercept = TRUE)
+    lmat <- ns(temp, df = df, intercept = TRUE) # generate the B-spline matrix
     pmat <- lmat[1:nsmo, ]
     xmat <- lmat[-(1:nsmo), ]
-    qmat <- qr(xmat)
+    qmat <- qr(xmat) # compute QR decomposition of a matrix
     if (x$transform!="identity") 
         stop("please re-fit the Cox model with the identity transform")
     if (qmat$rank < df) 
@@ -33,9 +38,9 @@ yy <- x$y
         seval <- d * ((pmat %*% xtx) * pmat) %*% rep(1, df)
     
     ylab <- paste("VE(t) for", dimnames(yy)[[2]])
-    if (missing(var)) 
+    if (missing(var)){ 
         var <- 1:nvar
-    else {
+    } else {
         if (is.character(var)) 
             var <- match(var, dimnames(yy)[[2]])
         if (any(is.na(var)) || max(var) > nvar || min(var) < 

@@ -9,7 +9,7 @@ library(interplot)
 require(MatchIt)
 require(survival)
 require(matrixStats)
-
+library(dplyr)
 #input dataset
 fluve <- read.csv("//cdc.gov/private/M310/zdn5/Flu VE AMBULATORY Network/Waning 2014/pooled/h3pool_22MAR16.csv", head=TRUE)
 
@@ -78,12 +78,14 @@ vacc.all <-subset(fluve_new, SVAC_ID14==1)
 quantile(vacc.all$vaccint, probs = seq(0, 1, .1), na.rm = TRUE)
 quantile(vacc.all$vaccint, probs = seq(.9, 1, .01), na.rm = TRUE)
 
-qu0 <-quantile(vacc.all$vaccint, probs = 0.10);qu0
-qu1 <-quantile(vacc.all$vaccint, probs = 0.98);qu1
-qu2 <-quantile(vacc.all$vaccint, probs = 0.99);qu2
-qu3 <-quantile(vacc.all$vaccint, probs = 0.80);qu3
-qu4 <-quantile(vacc.all$vaccint, probs = 0.20);qu4
-qu5 <-quantile(vacc.all$vaccint, probs = 0.50);qu5
+qus <- quantile(vacc.all$vaccint, probs = c(0.10,0.98,0.99,0.80,0.20,0.50))
+names(qus) <- c('qu0','qu1','qu2','qu3','qu4','qu5')
+# qu0 <-quantile(vacc.all$vaccint, probs = 0.10);qu0
+# qu1 <-quantile(vacc.all$vaccint, probs = 0.98);qu1
+# qu2 <-quantile(vacc.all$vaccint, probs = 0.99);qu2
+# qu3 <-quantile(vacc.all$vaccint, probs = 0.80);qu3
+# qu4 <-quantile(vacc.all$vaccint, probs = 0.20);qu4
+# qu5 <-quantile(vacc.all$vaccint, probs = 0.50);qu5
 
 #Spline model - days from vaccination to onset modeled as spline
 #Specification of spline knots based on comparison of model fit
