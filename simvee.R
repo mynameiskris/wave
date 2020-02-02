@@ -160,7 +160,7 @@ run_sim <- function(params, path = getwd()){
     }
   } 
   # return incidence tibble
-  return(g_inc)
+  return(population_report)
 }
 # 
 # if (params$sas == TRUE) {
@@ -199,5 +199,6 @@ run_sim <- function(params, path = getwd()){
 #     write_sas(inc_seasonal_overall, paste0('Seasonal_overall_',params$title,'.sas7bdat'))
 #   }
 # }
+
 
 
