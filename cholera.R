@@ -6,15 +6,15 @@ library(splines)
 # data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/datadmp1")
 # data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/datadmp2")
 # data.restore("~/Dropbox/Kylie/Projects/VE Waning/code/chol4/towork.s")
-chol.dat <- read.csv(file="~/Dropbox/Kylie/Projects/VE Waning/code/chol4/choldat.csv", na.strings="")
+# chol.dat <- read.csv(file="~/Dropbox/Kylie/Projects/VE Waning/code/chol4/choldat.csv", na.strings="")
 
 # fit ordinary Cox propotional hazards model
-chol.coxmod <- coxph(Surv(cpdays) ~ cpwc + cpbswc + cpageind, data=chol.dat)
+# chol.coxmod <- coxph(Surv(cpdays) ~ cpwc + cpbswc + cpageind, data=chol.dat)
 # test the proportional hazards assumption
 # this step also computes the Schoenfeld residuals ($y)
-chol.tdhaz <- cox.zph(chol.coxmod, transform = "identity")
+# chol.tdhaz <- cox.zph(chol.coxmod, transform = "identity")
 
-plot.cox.zph.ve3(chol.tdhaz, var = c("cpwc","cpbswc"))
+#ve_est <- plot.cox.zph.ve3(chol.tdhaz, var = c("cpwc","cpbswc"))
 
 plot.cox.zph.ve2 <- function(x, df = 4, nsmo = 40, var,...){
 xx <- x$x # transformed time axis from cox.zph()
@@ -50,7 +50,7 @@ yy <- x$y # Schoenfeld residuals computed by cox.zph()
     for (i in var) {
         y <- yy[, i]
         yhat.beta <- pmat %*% qr.coef(qmat, y)
-        yhat <- 1-exp(yhat.beta)
+        yhat <- 1-exp(yhat.beta) # VE estimate
         
         #se
             temp <- 2 * sqrt(x$var[i, i] * seval)
@@ -120,7 +120,7 @@ yy <- x$y
     for (i in var) {
         y <- yy[, i]
         yhat.beta <- pmat %*% qr.coef(qmat, y)
-        yhat <- 1-exp(yhat.beta)
+        yhat <- 1-exp(yhat.beta) # VE estimate
         
         #se
             temp <- 2 * sqrt(x$var[i, i] * seval)
@@ -144,7 +144,10 @@ yy <- x$y
         #se
             lines(pred.x, yup, lty = 2)
             lines(pred.x, ylow, lty = 2)
-        return(data.frame(cbind(round(pred.x),round(yhat,digits=2),
-        round(ylow,digits=2),round(yup,digits=2))))
+        rtn <- data.frame(pred_x = round(pred.x), 
+                          y_hat = round(yhat,digits=2),
+                          y_lower = round(ylow,digits=2),
+                          y_upper = round(yup,digits=2))
+        return(rtn)
     }
 }
