@@ -85,7 +85,7 @@ simvee <- function(params, simNum) {
 }
 
 # function to run simulation and generate incidence report
-run_sim <- function(params, path = getwd()){
+run_simvee <- function(params, path = getwd()){
   for (i in 1:params$sim) {
     results <- simvee(params, i)
   
