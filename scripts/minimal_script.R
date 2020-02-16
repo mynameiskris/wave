@@ -10,7 +10,8 @@ source('simvee.R')
 source("readParams.R")
 
 # Read parameters from input files
-params <- readParams("input/SimVEE_input.csv")
+# you can specify the folder and file names of the infput file within the ""
+params <- readParams("input/SimVEE_input__Test_04.csv")
 
 # run simulation
 #   there is an optional path argument for run_sim(params, path = )
@@ -18,13 +19,14 @@ params <- readParams("input/SimVEE_input.csv")
 mysims <- run_simvee(params)
 
 ### read in outcomes file
-outcomes_dat <- read.csv("Outcomes__Test_04.csv")
-
+outcomes_dat <- read.csv("output/Outcomes__Test_4.csv")
+# add FARI indicator variable
+outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1))
 ### apply method from Durham et al. 1988
 source('ve_methods.R')
 # loop through simulations
 for (i in 1:max(outcomes_dat$Sim)){
-  outcomes_dat1 <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1)) %>% filter(Sim == i)
+  outcomes_dat1 <- outcomes_dat %>% filter(Sim == i)
   # fit ordinary Cox propotional hazards model
     flu_coxmod <- coxph(Surv(DINF,FARI) ~ V, data=outcomes_dat1)
   # test the proportional hazards assumption and compute the Schoenfeld residuals ($y)
