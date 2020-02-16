@@ -1,4 +1,5 @@
-readParams = function(filename) {
+readParams = function(filename = NULL) {
+  if(is.null(filename))(filename = file.choose())
   para <- list()
   Y <- readLines(filename, warn = FALSE)
   
