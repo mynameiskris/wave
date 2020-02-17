@@ -81,13 +81,13 @@ tian_ve <- function(dat, n_sim){
   
   count_KS = 0
   count_CM = 0
-  result = matrix(0,nrow = NSim, ncol = 2)
+  result = matrix(0,nrow = n_sim, ncol = 2)
   dimnames(result) = list(seq(1:n_sim), c("Kolmogorov-Smirnov Test", "Cramer von Mises Test")) 
   
   for (i in 1:n_sim){
     # print(i)
-    dat = outcome.dat[outcome.dat$Sim == i, ]
-    fit.out = timecox(Surv(DINF,FARI) ~ V, data = dat, n.sim = 500, max.time = 700)
+    dat1 = dat %>% filter(Sim == i) %>% mutate(DINF = ifelse(DINF == 0, 999, DINF))
+    fit.out = timecox(Surv(DINF, FARI) ~ V, data = dat1, n.sim = 500, max.time = 700)
     KS_pvalue = fit.out$pval.testBeqC[2]
     CM_pvalue = fit.out$pval.testBeqC[2]
     
