@@ -46,31 +46,56 @@ durham_ve <- function(x, df = 2, nsmo = 40,var,...){
 # Estimate VE using method from Ferdinands et al. 2017 (CID?)
 ferdinands_ve <- function(dat, splines = FALSE){
   
-if (splines == FALSE){ # fit logistic regression model with dichotomous vaccination variable
-  ve.logr1<- glm(FARI ~ V + DINF, family=binomial("logit"), data = dat)
-  exp(cbind(OR = coef(ve.logr1), confint(ve.logr1)))
+  if (splines == FALSE){ # fit logistic regression model with dichotomous vaccination variable
+    ve.logr1<- glm(FARI ~ V + DINF, family=binomial("logit"), data = dat)
+    exp(cbind(OR = coef(ve.logr1), confint(ve.logr1)))
+  }
+  else{ # fit splines
+    vacc.dat <- dat %>% filter(V == 1)
+    qus <- quantile(vacc.dat$DINF, probs = c(0.10,0.98,0.99,0.80,0.20,0.50))
+    names(qus) <- c('qu0','qu1','qu2','qu3','qu4','qu5')
+  
+    # Spline model - days from vaccination to onset modeled as spline
+    # Specification of spline knots based on comparison of model fit
+    # for numerous alternative specifications (not shown here)
+  
+    ve.logr2<- glm(FARI ~ V +  ns(DINF, knots=c(qus["qu1"], qus["qu2"])), family=binomial("logit"), data = dat)
+    #exp(cbind(OR = coef(ve.logr2), confint(ve.logr2)))
+    summary(ve.logr2)
+  
+    aOR.avg <- exp(ve.logr1$coefficient[5])
+    aVE.avg <- (1 - aOR.avg)*100; aVE.avg
+  
+    LH1 <- logLik(ve.logr1)
+    LH2 <- logLik(ve.logr2)
+  
+    delta <- 2*(LH2[1] - LH1[1])
+  }
+  rtn <- list(lh1 = LH1, lh2 = LH2, delta = delta)
+  return(rtn)
+  
 }
-else{ # fit splines
-  vacc.dat <- dat %>% filter(V == 1)
-  qus <- quantile(vacc.dat$DINF, probs = c(0.10,0.98,0.99,0.80,0.20,0.50))
-  names(qus) <- c('qu0','qu1','qu2','qu3','qu4','qu5')
+
+# Estimate VE using method from Tian et al.
+tian_ve <- function(dat, n_sim){
   
-  # Spline model - days from vaccination to onset modeled as spline
-  # Specification of spline knots based on comparison of model fit
-  # for numerous alternative specifications (not shown here)
+  count_KS = 0
+  count_CM = 0
+  result = matrix(0,nrow = NSim, ncol = 2)
+  dimnames(result) = list(seq(1:n_sim), c("Kolmogorov-Smirnov Test", "Cramer von Mises Test")) 
   
-  ve.logr2<- glm(FARI ~ V +  ns(DINF, knots=c(qus["qu1"], qus["qu2"])), family=binomial("logit"), data = dat)
-  #exp(cbind(OR = coef(ve.logr2), confint(ve.logr2)))
-  summary(ve.logr2)
-  
-  aOR.avg <- exp(ve.logr1$coefficient[5])
-  aVE.avg <- (1 - aOR.avg)*100; aVE.avg
-  
-  LH1 <- logLik(ve.logr1);LH1
-  LH2 <- logLik(ve.logr2);LH2
-  
-  delta <- 2*(LH2[1] - LH1[1]);delta
-  
-  
-}  
+  for (i in 1:n_sim){
+    # print(i)
+    dat = outcome.dat[outcome.dat$Sim == i, ]
+    fit.out = timecox(Surv(DINF,FARI) ~ V, data = dat, n.sim = 500, max.time = 700)
+    KS_pvalue = fit.out$pval.testBeqC[2]
+    CM_pvalue = fit.out$pval.testBeqC[2]
+    
+    if (KS_pvalue < 0.05){count_KS = count_KS + 1}
+    if (CM_pvalue < 0.05){count_CM = count_CM + 1}
+    
+    result[i,1] = KS_pvalue
+    result[i,2] = CM_pvalue
+  }
+  return(result)
 }
