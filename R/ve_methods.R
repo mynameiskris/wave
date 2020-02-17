@@ -86,7 +86,7 @@ tian_ve <- function(dat, n_sim){
   
   for (i in 1:n_sim){
     # print(i)
-    dat1 = dat %>% filter(Sim == i) %>% mutate(DINF = ifelse(DINF == 0, 999, DINF))
+    dat1 = dat %>% filter(Sim == i)
     fit.out = timecox(Surv(DINF, FARI) ~ V, data = dat1, n.sim = 500, max.time = 700)
     KS_pvalue = fit.out$pval.testBeqC[2]
     CM_pvalue = fit.out$pval.testBeqC[2]
@@ -97,5 +97,8 @@ tian_ve <- function(dat, n_sim){
     result[i,1] = KS_pvalue
     result[i,2] = CM_pvalue
   }
+  count_KS
+  count_CM
+  
   return(result)
 }

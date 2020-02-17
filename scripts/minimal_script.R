@@ -4,6 +4,7 @@ library(dplyr)
 library(foreign)
 library(survival)
 library(splines)
+library(timereg)
 library(ggplot2)
 # Source functions from other files
 source('simvee.R')
@@ -21,9 +22,11 @@ mysims <- run_simvee(params)
 ### read in outcomes file
 outcomes_dat <- read.csv("output/Outcomes__Test_4.csv")
 # add FARI indicator variable
-outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1))
+outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
+                                        DINF = ifelse(DINF == 0, 999, DINF))
+
 ### apply method from Durham et al. 1988
-source('ve_methods.R')
+source('R/ve_methods.R')
 # loop through simulations
 for (i in 1:max(outcomes_dat$Sim)){
   outcomes_dat1 <- outcomes_dat %>% filter(Sim == i)
@@ -38,7 +41,7 @@ for (i in 1:max(outcomes_dat$Sim)){
     } else {ve_est <- temp}
 }
 # subset for 1 sim to plot
-ve_est1 <- ve_est %>% filter(Sim == 7)
+ve_est1 <- ve_est %>% filter(Sim == 1)
 # plot VE
 y_min <- ifelse(min(ve_est1$y_lower) < 0, min(ve_est1$y_lower), 0)
 y_max <- ifelse(max(ve_est1$y_upper) > 1, max(ve_est1$y_upper), 1)
@@ -51,3 +54,8 @@ p_durham <- ggplot(data = ve_est1, aes(x = pred_x, y = y_hat)) + geom_line() +
                   panel.background = element_blank(),
                   axis.line = element_line(colour = "black"))
 p_durham
+
+### apply method from Tian et al.
+# this function loops through simulations within the function,
+# so no need to subset the dataset by simulation beforehand
+ve_est2 <- tian_ve(outcomes_dat, n_sim = 10)
