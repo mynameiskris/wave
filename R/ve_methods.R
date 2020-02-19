@@ -76,29 +76,31 @@ ferdinands_ve <- function(dat, splines = FALSE){
   
 }
 
-# Estimate VE using method from Tian et al.
-tian_ve <- function(dat, n_sim){
-  
-  count_KS = 0
-  count_CM = 0
-  result = matrix(0,nrow = n_sim, ncol = 2)
-  dimnames(result) = list(seq(1:n_sim), c("Kolmogorov-Smirnov Test", "Cramer von Mises Test")) 
-  
-  for (i in 1:n_sim){
-    # print(i)
-    dat1 = dat %>% filter(Sim == i)
-    fit.out = timecox(Surv(DINF, FARI) ~ V, data = dat1, n.sim = 500, max.time = 700)
-    KS_pvalue = fit.out$pval.testBeqC[2]
-    CM_pvalue = fit.out$pval.testBeqC[2]
-    
-    if (KS_pvalue < 0.05){count_KS = count_KS + 1}
-    if (CM_pvalue < 0.05){count_CM = count_CM + 1}
-    
-    result[i,1] = KS_pvalue
-    result[i,2] = CM_pvalue
-  }
-  count_KS
-  count_CM
-  
-  return(result)
+# Estimate VE using method from Tian et al. 2005 
+tian_ve <- function(dat, n_timepoint_breaks = 40){
+  # fit timecox model
+  fit = timecox(Surv(DINF, FARI) ~ V, data = dat, n.sim = 500, max.time = 700)
+  # cummulative estimates
+  alpha0 = fit$cum[,2]
+  betas.cumul = fit$cum[,-(1:2)]
+  betas.cumul.var = fit$var.cum
+  # de-cummulative estimates
+  predicted.timepts <- seq(from = min(fit$cum[,1]), to = max(fit$cum[,1]), length = n_timepoint_breaks)
+  decumulated.ests = CsmoothB(fit$cum, predicted.timepts, b = 1)
+  timecox.hazardrate = exp(decumulated.ests[,2])
+  timecox.var = decumulated.ests[,-(1:2)]
+  # output
+  rtn_cum <- tibble(alpha0 = alpha0, beta_t = betas, beta_t_var = betas.cumul.var)
+  rtn_decum <- tibble(time = predicted.timepts, 
+                hazardrate = timecox.hazardrate,
+                lower = timecox.hazardrate - 1.96*sqrt(timecox.var),
+                upper = timecox.hazardrate + 1.96*sqrt(timecox.var))
+  return(list(cummulative = rtn_cum,
+              decumulative = rtn_decum))
 }
+
+# Estimate VE using method from Ainslie et al. 2017 (SIM)
+ainslie_ve <- function(dat){
+  
+}
+

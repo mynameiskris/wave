@@ -20,10 +20,10 @@ params <- readParams("input/SimVEE_input__Test_04.csv")
 mysims <- run_simvee(params)
 
 ### read in outcomes file
-outcomes_dat <- read.csv("output/Outcomes__Test_4.csv")
+outcomes_dat <- read.csv("output/Outcomes_Test_4.csv")
 # add FARI indicator variable
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
-                                        DINF = ifelse(DINF == 0, 999, DINF))
+                                        DINF_new = ifelse(DINF == 0, 999, DINF))
 
 ### apply method from Durham et al. 1988
 source('R/ve_methods.R')
@@ -31,7 +31,7 @@ source('R/ve_methods.R')
 for (i in 1:max(outcomes_dat$Sim)){
   outcomes_dat1 <- outcomes_dat %>% filter(Sim == i)
   # fit ordinary Cox propotional hazards model
-    flu_coxmod <- coxph(Surv(DINF,FARI) ~ V, data=outcomes_dat1)
+    flu_coxmod <- coxph(Surv(DINF_new,FARI) ~ V, data=outcomes_dat1)
   # test the proportional hazards assumption and compute the Schoenfeld residuals ($y)
     flu_zph <- cox.zph(fit = flu_coxmod, transform = "identity")
   # calculate VE
@@ -55,7 +55,8 @@ p_durham <- ggplot(data = ve_est1, aes(x = pred_x, y = y_hat)) + geom_line() +
                   axis.line = element_line(colour = "black"))
 p_durham
 
-### apply method from Tian et al.
-# this function loops through simulations within the function,
-# so no need to subset the dataset by simulation beforehand
-ve_est2 <- tian_ve(outcomes_dat, n_sim = 10)
+### apply method from Tian et al. 2005 (JASA)
+ve_est2 <- tian_ve(dat)
+
+### apply method from Ainslie et al. 2017 (SIM)
+
