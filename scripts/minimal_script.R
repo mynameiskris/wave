@@ -1,26 +1,30 @@
 # SIMVEE minimal script
+#install.packages("timereg")
 library(dplyr)
 library(foreign)
 library(survival)
 library(splines)
 library(timereg)
 library(ggplot2)
-# Source functions from other files
-source('simvee.R')
-source('readParams.R')
-source('ve_methods.R')
-# Read parameters from input files
-# you can specify the folder and file names of the infput file within the ""
-params <- readParams("input/SimVEE_input__Test_04.csv")
 
-# run simulation
+### Source functions from other files
+source('R/simvee.R')
+source('R/readParams.R')
+source('R/ve_methods.R')
+
+### Read parameters from input files
+#   you can specify the folder and file names of the input file within the ""
+params <- readParams("input/SimVEE_input_Test_05.csv")
+
+### run simulation
 #   there is an optional path argument for run_sim(params, path = )
 #   if no path is specified, it will default to current working directory
-mysims <- run_simvee(params)
+outcomes_dat <- run_simvee(params)
 
 ### read in outcomes file
-# you can specify the file name of the output file inside ""
-outcomes_dat <- read.csv("Outcomes__Test_03.csv")
+#   you can specify the file name/path of the output file inside ""
+#   outcomes_dat <- read.csv("Outcomes_Test_05.csv")
+
 # add FARI indicator variable
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
                                         DINF_new = ifelse(DINF == 0, 999, DINF))
@@ -52,7 +56,7 @@ for (i in 1:max(outcomes_dat$Sim)){
       ve_est <- bind_rows(ve_est,temp2)
 }
 
-# mean VE from simulations
+### mean VE from simulations
 mean_ve <- ve_est %>% group_by(Method, time) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
 mean_ve
 
