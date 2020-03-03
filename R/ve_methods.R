@@ -94,29 +94,60 @@ tian_ve <- function(dat, n_timepoint_breaks = 40){
 }
 
 # Estimate VE using method from Ainslie et al. 2017 (SIM)
-# ainslie_ve <- function(dat, n_days){
-#   
-#   N <- length(unique(dat$ID))
-#   prev <- numeric(n_days)
-#   for (d in 1:n_days){
-#     prev[d] <- length(which(dat$DINF == d))/N
-#   }
-#   prev <- ifelse(prev == 0, 0.0001, prev)
-#   
-#   logLik <- function(vac_status, prev){
-#     # conditional probabilities
-#       pi_00 <- (1 - gamma_0) * prev
-#       pi_1 <- 1 - ((1 - gamma_v) * prev)
-#     # unconditional probabilities
-#       phi_0[d] <- pi_0 * phi_0[d-1]
-#       phi_1[d] <- pi_1 * phi_0[d-1]
-#     
-#     L = 
-#     -sum(log(L))
-#   }
-#   
-#   mle <- optim(par = 0.1, logLik, method = "L-BFGS-B", lower = 0, upper = 1, hessian = TRUE)
-#   
-  
-# }
+ ainslie_ve <- function(dat, n_days){
+   # calculate prevalence
+   N <- length(unique(dat$ID))
+   prev <- numeric(n_days)
+   for (d in 1:n_days){
+     prev[d] <- length(which(dat$DINF == d))/N
+   }
+   prev <- ifelse(prev == 0, 0.001, prev)
+   x <- list(n_days = n_days, prev = prev, dinf = dat$DINF_new, v = dat$V)
+   
+   logLik <- function(x, par){
+     gamma_0 = par[1]
+     gamma_1 = par[2]
+     
+    # conditional probabilities
+       pi_00 <- 1 - gamma_0 * x$prev
+       pi_01 <- 1 - gamma_1 * x$prev
+       pi_10 <- gamma_0 * x$prev
+       pi_11 <- gamma_1 * x$prev
+    # unconditional probabilities
+       phi_00 <- phi_01 <- phi_10 <- phi_11 <- c(1,rep(0,x$n_days-1))
+       for (d in 2:x$n_days){
+        phi_00[d] <- pi_00[d] * phi_00[d-1]
+        phi_01[d] <- pi_01[d] * phi_01[d-1]
+        phi_10[d] <- pi_10[d] * phi_00[d-1]
+        phi_11[d] <- pi_11[d] * phi_01[d-1]
+       }
+    # personal contribution to the likelihood
+      Li <- numeric(N)
+      for (i in 1:N){
+        if (x$dinf[i] < 999){
+          if (x$v[i] == 0){Li[i] <- phi_10[x$dinf[i]]
+          } else {Li[i] <- phi_11[x$dinf[i]]}
+        } else if (x$dinf[i] == 999){
+          if (x$v[i] == 0){Li[i] <- phi_00[x$n_days]
+          } else {Li[i] <- phi_01[x$n_days]}
+        }
+      }
+
+    # likelihood 
+      L = prod(Li)
+      
+      return(-sum(log(L)))
+   }
+   # maximum likelihood estimates
+    mle <- optim(par = c(0.1, 0.1), logLik, x = x, method = "L-BFGS-B", lower = 0, upper = 1, hessian = TRUE)
+   
+   # calculate lamdas for each individual
+    lambda <- numeric(N)
+    for (i in 1:N){
+      if (x$v[i] == 0) {lambda[i] <- sum(mle$par[1]*prev*c(phi_00[-1],phi_00[1]))
+      } else {lambda[i] <- sum(mle$par[2]*prev*c(phi_01[-1],phi_01[1]))}
+    }
+    ve = 1 - (sum(lambda[which(x$v == 1)])/sum(lambda[which(x$v == 0)]))
+    return(ve)
+ }
 
