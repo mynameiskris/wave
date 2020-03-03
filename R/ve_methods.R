@@ -76,9 +76,12 @@ ferdinands_ve <- function(dat, splines = FALSE){
 }
 
 # Estimate VE using method from Tian et al. 2005 
-tian_ve <- function(dat, n_timepoint_breaks = 40){
+tian_ve <- function(dat, n_timepoint_breaks = 40, alpha = 0.05){
+  reject_h0 <- 0
   # fit timecox model
   fit = timecox(Surv(DINF_new, FARI) ~ V, data = dat, n.sim = 500, max.time = 700)
+  KS_pvalue = fit$pval.testBeqC[2]
+  if (KS_pvalue < alpha){reject_h0 = 1} 
   # cummulative estimates
   # rtn_cum <- tibble(alpha0 = fit$cum[,2], beta_t = fit$cum[,-(1:2)]) %>% 
   #               mutate(ve = 1 - exp(beta_t))
@@ -90,7 +93,7 @@ tian_ve <- function(dat, n_timepoint_breaks = 40){
     rtn <- tibble(time = predicted.timepts,hazardrate = timecox.hazardrate) %>% 
               mutate(ve = 1 - hazardrate)
   # output
-  return(rtn)
+  return(list(output = rtn, reject_h0 = reject_h0))
 }
 
 # Estimate VE using method from Ainslie et al. 2017 (SIM)

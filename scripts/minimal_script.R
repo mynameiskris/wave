@@ -24,14 +24,15 @@ outcomes_dat <- run_simvee(params)
 
 ### read in outcomes file
 #   you can specify the file name/path of the output file inside ""
-#   outcomes_dat <- read.csv("Outcomes_Test_05.csv")
+# outcomes_dat <- read.csv("Outcomes_Test_05.csv")
 
 # add FARI indicator variable
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
                                         DINF_new = ifelse(DINF == 0, 999, DINF))
 
 ### apply VE estimation methods 
-
+reject_h0_durham <- 0
+reject_h0_tian <- 0
 # loop through simulations and apply each method
 for (i in 1:max(outcomes_dat$Sim)){
   # subset data for each simulation
@@ -43,6 +44,7 @@ for (i in 1:max(outcomes_dat$Sim)){
     flu_coxmod <- coxph(Surv(DINF_new,FARI) ~ V, data=outcomes_dat1)
   # test the proportional hazards assumption and compute the Schoenfeld residuals ($y)
     flu_zph <- cox.zph(fit = flu_coxmod, transform = "identity")
+    reject_h0_durham <- reject_h0_durham + ifelse(flu_zph$table[1,3] < 0.05, 1, 0)
   # calculate VE
     temp <- durham_ve(flu_zph, var = "V") %>% mutate(Sim = i, Method = "Durham")
     if (i > 1){
@@ -53,9 +55,16 @@ for (i in 1:max(outcomes_dat$Sim)){
     ### method from Tian et al. 2005 ###
     ######################################
     # calculate VE
-    temp2 <- tian_ve(outcomes_dat1) %>% mutate(Sim = i, Method = "Tian")
-      ve_est <- bind_rows(ve_est,temp2)
+    temp2 <- tian_ve(outcomes_dat1) 
+    temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
+    ve_est <- bind_rows(ve_est,temp2a)
+    # proportion of sims where null hypothesis is rejected
+    reject_h0_tian <- reject_h0_tian + temp2$reject_h0
 }
+
+### proportion of sims where H0 rejected
+prop_reject_h0 <- tibble(method = c('Durham','Tian'),
+                         proportion = c(reject_h0_durham/params$sim, reject_h0_tian/params$sim))
 
 ### mean VE from simulations
 mean_ve <- ve_est %>% group_by(Method, time) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
