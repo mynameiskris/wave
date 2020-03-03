@@ -47,10 +47,10 @@ simvee <- function(params, simNum) {
   getBetaForSubject = function (sub) {
     X = sub$X
     V = sub$V
-    if (X == 0 && V == 0) return(params$beta_d00)
-    if (X == 0 && V == 1) return(params$beta_d01)
-    if (X == 1 && V == 0) return(params$beta_d10)
-    if (X == 1 && V == 1) return(params$beta_d11)
+    if (V == 0 && X == 0) return(params$beta_d00)
+    if (V == 0 && X == 1) return(params$beta_d01)
+    if (V == 1 && X == 0) return(params$beta_d10)
+    if (V == 1 && X == 1) return(params$beta_d11)
   }
   
   ## Iterate over number of days.
