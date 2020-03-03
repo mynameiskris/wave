@@ -65,8 +65,8 @@ for (i in 1:max(outcomes_dat$Sim)){
 ### proportion of sims where H0 rejected
 prop_reject_h0 <- tibble(method = c('Durham','Tian'),
                          proportion = c(reject_h0_durham/params$sim, reject_h0_tian/params$sim))
-
-### mean VE from simulations
+prop_reject_h0
+### mean VE from simulations at each timepoint
 mean_ve <- ve_est %>% group_by(Method, time) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
 mean_ve
 
