@@ -46,7 +46,8 @@ for (i in 1:max(outcomes_dat$Sim)){
     flu_zph <- cox.zph(fit = flu_coxmod, transform = "identity")
     reject_h0_durham <- reject_h0_durham + ifelse(flu_zph$table[1,3] < 0.05, 1, 0)
   # calculate VE
-    temp <- durham_ve(flu_zph, var = "V") %>% mutate(Sim = i, Method = "Durham")
+  # the nsmo argument indicates the number of time points to calculate VE at 
+    temp <- durham_ve(flu_zph, nsmo = 20, var = "V") %>% mutate(Sim = i, Method = "Durham")
     if (i > 1){
     ve_est <- bind_rows(ve_est,temp)
     } else {ve_est <- temp}
@@ -55,7 +56,8 @@ for (i in 1:max(outcomes_dat$Sim)){
     ### method from Tian et al. 2005 ###
     ######################################
     # calculate VE
-    temp2 <- tian_ve(outcomes_dat1) 
+    # n_timepoint_breaks argument specifies the number of time points to calculate VE for
+    temp2 <- tian_ve(outcomes_dat1, n_timepoint_breaks = 20) 
     temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
     ve_est <- bind_rows(ve_est,temp2a)
     # proportion of sims where null hypothesis is rejected
