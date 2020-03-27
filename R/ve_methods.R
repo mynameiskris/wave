@@ -1,13 +1,13 @@
 ### VE funtions
 
 # Estimate VE using method from Durham et al. 1988 (AJE)
-durham_ve <- function(x, df = 2, nsmo = 40,var,...){
+durham_ve <- function(x, df = 2, n_time_points = 20,var,...){
   xx <- x$x
   yy <- x$y
   d <- nrow(yy)
   df <- max(df)
   nvar <- ncol(yy)
-  pred.x <- seq(from = min(xx), to = max(xx), length = nsmo)
+  pred.x <- seq(from = min(xx), to = max(xx), length = n_time_points)
   temp <- c(pred.x, xx)
   lmat <- ns(temp, df = df, intercept = TRUE)
   pmat <- lmat[1:nsmo, ]
@@ -76,7 +76,7 @@ ferdinands_ve <- function(dat, splines = FALSE){
 }
 
 # Estimate VE using method from Tian et al. 2005 
-tian_ve <- function(dat, n_timepoint_breaks = 40, alpha = 0.05){
+tian_ve <- function(dat, n_time_point = 20, alpha = 0.05){
   reject_h0 <- 0
   # fit timecox model
   fit = timecox(Surv(DINF_new, FARI) ~ V, data = dat, n.sim = 500, max.time = 700)
@@ -86,7 +86,7 @@ tian_ve <- function(dat, n_timepoint_breaks = 40, alpha = 0.05){
   # rtn_cum <- tibble(alpha0 = fit$cum[,2], beta_t = fit$cum[,-(1:2)]) %>% 
   #               mutate(ve = 1 - exp(beta_t))
   # de-cummulative estimates
-    predicted.timepts <- seq(from = min(fit$cum[,1]), to = max(fit$cum[,1]), length = n_timepoint_breaks)
+    predicted.timepts <- seq(from = min(fit$cum[,1]), to = max(fit$cum[,1]), length = n_time_points)
     decumulated.ests = CsmoothB(fit$cum, predicted.timepts, b = 1)
     timecox.hazardrate = exp(decumulated.ests[,2])
     timecox.var = decumulated.ests[,-(1:2)]
@@ -97,7 +97,7 @@ tian_ve <- function(dat, n_timepoint_breaks = 40, alpha = 0.05){
 }
 
 # Estimate VE using method from Ainslie et al. 2017 (SIM)
- ainslie_ve <- function(dat, n_days){
+ ainslie_ve <- function(dat, n_days, n_time_points = 20){
    # calculate prevalence
    N <- length(unique(dat$ID))
    prev <- numeric(n_days)
@@ -155,7 +155,8 @@ tian_ve <- function(dat, n_timepoint_breaks = 40, alpha = 0.05){
                  upper = c(1, 1, 1), hessian = TRUE)
    
    # calculate VE = 1 - theta_d
-     ve_dat <- tibble(d = seq(1,n_days)) %>% mutate(ve = 1-(mle$par[2] + mle$par[3] * d))
+     ve_dat <- tibble(d = seq(from = 1, to = n_days, length = n_time_points)) %>% 
+                      mutate(ve = 1-(mle$par[2] + mle$par[3] * d))
    # calculate lamdas for each individual
     # lambda <- numeric(N)
     # for (i in 1:N){
