@@ -108,22 +108,34 @@ tian_ve <- function(dat, n_timepoint_breaks = 40, alpha = 0.05){
    x <- list(n_days = n_days, prev = prev, dinf = dat$DINF_new, v = dat$V)
    
    logLik <- function(x, par){
-     gamma_0 = par[1]
-     gamma_1 = par[2]
+     beta = par[1]
+     theta_0 = par[2]
+     lambda = par[3]
      
-    # conditional probabilities
-       pi_00 <- 1 - gamma_0 * x$prev
-       pi_01 <- 1 - gamma_1 * x$prev
-       pi_10 <- gamma_0 * x$prev
-       pi_11 <- gamma_1 * x$prev
-    # unconditional probabilities
-       phi_00 <- phi_01 <- phi_10 <- phi_11 <- c(1,rep(0,x$n_days-1))
-       for (d in 2:x$n_days){
-        phi_00[d] <- pi_00[d] * phi_00[d-1]
-        phi_01[d] <- pi_01[d] * phi_01[d-1]
-        phi_10[d] <- pi_10[d] * phi_00[d-1]
-        phi_11[d] <- pi_11[d] * phi_01[d-1]
+      pi_00 <- pi_01 <- pi_10 <- pi_11 <- c(1,rep(0,x$n_days-1)) 
+      phi_00 <- phi_01 <- phi_10 <- phi_11 <- c(1,rep(0,x$n_days-1)) 
+    # loop over days 
+     for (d in 2:x$n_days){
+    # theta
+      theta <- theta_0 + lambda * d
+    # conditional probabilities (pi_jv, where j = infection status, v = vaccination status)
+       pi_00[d] <- 1 - beta * x$prev[d]                    # not infected, unvaccinated
+       pi_01[d] <- 1 - beta * theta * x$prev[d]            # not infected, vaccinated
+       pi_10[d] <- beta * x$prev[d]                        # infected, unvaccinated
+       pi_11[d] <- beta * theta * x$prev[d]                # infected, vaccinated
+    # unconditional probabilities (phi_jv, j = infection status, v = vaccination status)
+       if (d == 1){
+         phi_00[d] <- pi_00[d]
+         phi_01[d] <- pi_01[d]
+         phi_10[d] <- pi_10[d]
+         phi_11[d] <- pi_11[d]
+       } else {
+        phi_00[d] <- pi_00[d] * phi_00[d-1]          # not infected, unvaccinated
+        phi_01[d] <- pi_01[d] * phi_01[d-1]          # not infected, vaccinated
+        phi_10[d] <- pi_10[d] * phi_00[d-1]          # infected, unvaccinated
+        phi_11[d] <- pi_11[d] * phi_01[d-1]          # infected, vaccinated
        }
+     }
     # personal contribution to the likelihood
       Li <- numeric(N)
       for (i in 1:N){
@@ -135,22 +147,22 @@ tian_ve <- function(dat, n_timepoint_breaks = 40, alpha = 0.05){
           } else {Li[i] <- phi_01[x$n_days]}
         }
       }
-
-    # likelihood 
-      L = prod(Li)
       
-      return(-sum(log(L)))
+      return(-sum(log(Li)))
    }
    # maximum likelihood estimates
-    mle <- optim(par = c(0.1, 0.1), logLik, x = x, method = "L-BFGS-B", lower = 0, upper = 1, hessian = TRUE)
+    mle <- optim(par = c(0.1, 0.4, 0.01), logLik, x = x, method = "L-BFGS-B", lower = c(0.00001, 0.00001, 0.00001), 
+                 upper = c(1, 1, 1), hessian = TRUE)
    
+   # calculate VE = 1 - theta_d
+     ve_dat <- tibble(d = seq(1,n_days)) %>% mutate(ve = 1-(mle$par[2] + mle$par[3] * d))
    # calculate lamdas for each individual
-    lambda <- numeric(N)
-    for (i in 1:N){
-      if (x$v[i] == 0) {lambda[i] <- sum(mle$par[1]*prev*c(phi_00[-1],phi_00[1]))
-      } else {lambda[i] <- sum(mle$par[2]*prev*c(phi_01[-1],phi_01[1]))}
-    }
-    ve = 1 - (sum(lambda[which(x$v == 1)])/sum(lambda[which(x$v == 0)]))
-    return(ve)
+    # lambda <- numeric(N)
+    # for (i in 1:N){
+    #   if (x$v[i] == 0) {lambda[i] <- sum(mle$par[1]*prev*c(phi_00[-1],phi_00[1]))
+    #   } else {lambda[i] <- sum(mle$par[2]*prev*c(phi_01[-1],phi_01[1]))}
+    # }
+    # ve = 1 - (sum(lambda[which(x$v == 1)])/sum(lambda[which(x$v == 0)]))
+    return(ve_dat)
  }
 

@@ -8,9 +8,9 @@ library(timereg)
 library(ggplot2)
 
 ### Source functions from other files
-source('simvee.R')
-source('readParams.R')
-source('ve_methods.R')
+source('R/simvee.R')
+source('R/readParams.R')
+source('R/ve_methods.R')
 
 ### Read parameters from input files
 #   you can specify the folder and file names of the input file within the ""
@@ -62,6 +62,13 @@ for (i in 1:max(outcomes_dat$Sim)){
     ve_est <- bind_rows(ve_est,temp2a)
     # proportion of sims where null hypothesis is rejected
     reject_h0_tian <- reject_h0_tian + temp2$reject_h0
+    
+    #######################################
+    ### method from Ainslie et al. 2017 ###
+    #######################################
+    temp3 <- ainslie_ve(outcomes_dat1, n_days = params$ND)
+    temp3a <- temp3 %>% mutate(Sim = i, Method = "Ainslie")
+    ve_est <- bind_rows(ve_est,temp3a)
 }
 
 ### proportion of sims where H0 rejected
