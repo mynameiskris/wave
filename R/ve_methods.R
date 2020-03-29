@@ -12,8 +12,8 @@ durham_ve <- function(x, df = 2, n_time_points = 20,var,...){
   } else {pred.x <- n_time_points}
   temp <- c(pred.x, xx)
   lmat <- ns(temp, df = df, intercept = TRUE)
-  pmat <- lmat[1:n_time_points, ]
-  xmat <- lmat[-(1:n_time_points), ]
+  pmat <- lmat[1:length(pred.x), ]
+  xmat <- lmat[-(1:length(pred.x)), ]
   qmat <- qr(xmat)
   if (x$transform!="identity") 
     stop("please re-fit the Cox model with the identity transform")
