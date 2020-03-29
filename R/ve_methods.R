@@ -10,8 +10,8 @@ durham_ve <- function(x, df = 2, n_time_points = 20,var,...){
   pred.x <- seq(from = min(xx), to = max(xx), length = n_time_points)
   temp <- c(pred.x, xx)
   lmat <- ns(temp, df = df, intercept = TRUE)
-  pmat <- lmat[1:nsmo, ]
-  xmat <- lmat[-(1:nsmo), ]
+  pmat <- lmat[1:n_time_points, ]
+  xmat <- lmat[-(1:n_time_points), ]
   qmat <- qr(xmat)
   if (x$transform!="identity") 
     stop("please re-fit the Cox model with the identity transform")
@@ -76,7 +76,7 @@ ferdinands_ve <- function(dat, splines = FALSE){
 }
 
 # Estimate VE using method from Tian et al. 2005 
-tian_ve <- function(dat, n_time_point = 20, alpha = 0.05){
+tian_ve <- function(dat, n_time_points = 20, alpha = 0.05){
   reject_h0 <- 0
   # fit timecox model
   fit = timecox(Surv(DINF_new, FARI) ~ V, data = dat, n.sim = 500, max.time = 700)
@@ -153,10 +153,18 @@ tian_ve <- function(dat, n_time_point = 20, alpha = 0.05){
    # maximum likelihood estimates
     mle <- optim(par = c(0.1, 0.4, 0.01), logLik, x = x, method = "L-BFGS-B", lower = c(0.00001, 0.00001, 0.00001), 
                  upper = c(1, 1, 1), hessian = TRUE)
-   
+    
+    se <- sqrt(diag(solve(mle$hessian)))
+    
+    param_est <- tibble(param = c("beta", "theta_0", "lambda"), mle = mle$par, se = se) %>%
+                    mutate(lower = mle - 1.96 * se, upper = mle + 1.96 * se)
+
    # calculate VE = 1 - theta_d
-     ve_dat <- tibble(d = seq(from = 1, to = n_days, length = n_time_points)) %>% 
+     ve_dat <- tibble(time = seq(from = 1, to = n_days, length = n_time_points)) %>% 
                       mutate(ve = 1-(mle$par[2] + mle$par[3] * d))
+    
+   # output
+     rtn <- list(param_est = param_est, ve_dat = ve_dat)
    # calculate lamdas for each individual
     # lambda <- numeric(N)
     # for (i in 1:N){
@@ -164,6 +172,6 @@ tian_ve <- function(dat, n_time_point = 20, alpha = 0.05){
     #   } else {lambda[i] <- sum(mle$par[2]*prev*c(phi_01[-1],phi_01[1]))}
     # }
     # ve = 1 - (sum(lambda[which(x$v == 1)])/sum(lambda[which(x$v == 0)]))
-    return(ve_dat)
+    return(rtn)
  }
 
