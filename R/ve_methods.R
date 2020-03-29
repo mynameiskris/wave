@@ -7,7 +7,9 @@ durham_ve <- function(x, df = 2, n_time_points = 20,var,...){
   d <- nrow(yy)
   df <- max(df)
   nvar <- ncol(yy)
-  pred.x <- seq(from = min(xx), to = max(xx), length = n_time_points)
+  if (length(n_time_points) == 1) {
+    pred.x <- seq(from = min(xx), to = max(xx), length = n_time_points)
+  } else {pred.x <- n_time_points}
   temp <- c(pred.x, xx)
   lmat <- ns(temp, df = df, intercept = TRUE)
   pmat <- lmat[1:n_time_points, ]
@@ -86,7 +88,10 @@ tian_ve <- function(dat, n_time_points = 20, alpha = 0.05){
   # rtn_cum <- tibble(alpha0 = fit$cum[,2], beta_t = fit$cum[,-(1:2)]) %>% 
   #               mutate(ve = 1 - exp(beta_t))
   # de-cummulative estimates
-    predicted.timepts <- seq(from = min(fit$cum[,1]), to = max(fit$cum[,1]), length = n_time_points)
+    if (length(n_time_points) == 1) {
+      predicted.timepts <- seq(from = min(fit$cum[,1]), to = max(fit$cum[,1]), length = n_time_points)
+    } else {predicted.timepts <- n_time_points}
+    
     decumulated.ests = CsmoothB(fit$cum, predicted.timepts, b = 1)
     timecox.hazardrate = exp(decumulated.ests[,2])
     timecox.var = decumulated.ests[,-(1:2)]
@@ -160,8 +165,11 @@ tian_ve <- function(dat, n_time_points = 20, alpha = 0.05){
                         lower = mle - 1.96 * se, upper = mle + 1.96 * se)
 
    # calculate VE = 1 - theta_d
-     ve_dat <- tibble(time = seq(from = 1, to = n_days, length = n_time_points), 
-                      ve = 1-(mle$par[2] + mle$par[3] * time))
+    if (length(n_time_points) == 1) {
+      time_points <- seq(from = 1, to = n_days, length = n_time_points)
+    } else {time_points <- n_time_points}
+    
+     ve_dat <- tibble(time = time_points, ve = 1-(mle$par[2] + mle$par[3] * time))
     
    # output
      rtn <- list(param_est = param_est, ve_dat = ve_dat)
