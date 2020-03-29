@@ -147,21 +147,21 @@ tian_ve <- function(dat, n_time_points = 20, alpha = 0.05){
           } else {Li[i] <- phi_01[x$n_days]}
         }
       }
-      
+  
       return(-sum(log(Li)))
    }
    # maximum likelihood estimates
-    mle <- optim(par = c(0.1, 0.4, 0.01), logLik, x = x, method = "L-BFGS-B", lower = c(0.00001, 0.00001, 0.00001), 
+    mle <- optim(par = c(0.1, 0.4, 0.5), logLik, x = x, method = "L-BFGS-B", lower = c(0.0001, 0.0001, 0.0001), 
                  upper = c(1, 1, 1), hessian = TRUE)
     
     se <- sqrt(diag(solve(mle$hessian)))
     
-    param_est <- tibble(param = c("beta", "theta_0", "lambda"), mle = mle$par, se = se) %>%
-                    mutate(lower = mle - 1.96 * se, upper = mle + 1.96 * se)
+    param_est <- tibble(param = c("beta", "theta_0", "lambda"), mle = mle$par, se = se,
+                        lower = mle - 1.96 * se, upper = mle + 1.96 * se)
 
    # calculate VE = 1 - theta_d
-     ve_dat <- tibble(time = seq(from = 1, to = n_days, length = n_time_points)) %>% 
-                      mutate(ve = 1-(mle$par[2] + mle$par[3] * d))
+     ve_dat <- tibble(time = seq(from = 1, to = n_days, length = n_time_points), 
+                      ve = 1-(mle$par[2] + mle$par[3] * time))
     
    # output
      rtn <- list(param_est = param_est, ve_dat = ve_dat)
