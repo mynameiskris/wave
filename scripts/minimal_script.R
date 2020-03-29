@@ -30,11 +30,13 @@ outcomes_dat <- run_simvee(params)
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
                                         DINF_new = ifelse(DINF == 0, 999, DINF))
 
+# time points to calculate VE (use midpoint of each period)
+ve_times <- seq(1, params$ND, by = params$NDJ) + 3
 ### apply VE estimation methods 
-reject_h0_durham <- 0
-reject_h0_tian <- 0
+reject_h0_durham <- reject_h0_tian <- reject_h0_ainslie <- 0
 # loop through simulations and apply each method
 for (i in 1:max(outcomes_dat$Sim)){
+  print(i)
   # subset data for each simulation
   outcomes_dat1 <- outcomes_dat %>% filter(Sim == i)
   ######################################
@@ -47,7 +49,7 @@ for (i in 1:max(outcomes_dat$Sim)){
     reject_h0_durham <- reject_h0_durham + ifelse(flu_zph$table[1,3] < 0.05, 1, 0)
   # calculate VE
   # the nsmo argument indicates the number of time points to calculate VE at 
-    temp <- durham_ve(flu_zph, n_time_points = 20, var = "V") %>% mutate(Sim = i, Method = "Durham")
+    temp <- durham_ve(flu_zph, n_time_points = ve_times, var = "V") %>% mutate(Sim = i, Method = "Durham")
     if (i > 1){
     ve_est <- bind_rows(ve_est,temp)
     } else {ve_est <- temp}
@@ -57,7 +59,7 @@ for (i in 1:max(outcomes_dat$Sim)){
     ######################################
     # calculate VE
     # n_timepoint_breaks argument specifies the number of time points to calculate VE for
-    temp2 <- tian_ve(outcomes_dat1, n_time_points = 20) 
+    temp2 <- tian_ve(outcomes_dat1, n_time_points = ve_times) 
     temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
     ve_est <- bind_rows(ve_est,temp2a)
     # proportion of sims where null hypothesis is rejected
@@ -66,14 +68,18 @@ for (i in 1:max(outcomes_dat$Sim)){
     #######################################
     ### method from Ainslie et al. 2017 ###
     #######################################
-    temp3 <- ainslie_ve(outcomes_dat1, n_days = params$ND)
-    temp3a <- temp3 %>% mutate(Sim = i, Method = "Ainslie")
+    temp3 <- ainslie_ve(outcomes_dat1, n_days = params$ND, n_time_points = ve_times)
+    temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "Ainslie")
     ve_est <- bind_rows(ve_est,temp3a)
+    # proportion of sims where null hypothesis is rejected
+    reject_h0_ainslie <- reject_h0_ainslie + ifelse(temp3$param_est$lower[3] > 0, 1, 0)
+    
 }
 
 ### proportion of sims where H0 rejected
-prop_reject_h0 <- tibble(method = c('Durham','Tian'),
-                         proportion = c(reject_h0_durham/params$sim, reject_h0_tian/params$sim))
+prop_reject_h0 <- tibble(method = c('Durham','Tian', 'Ainslie'),
+                         count = c(reject_h0_durham, reject_h0_tian,reject_h0_ainslie),
+                         proportion = count/params$sim)
 write.csv(prop_reject_h0,file = paste0("Reject_H0_Prop_",params$title,".csv"))
 ### mean VE from simulations at each timepoint
 mean_ve <- ve_est %>% group_by(Method, time) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
