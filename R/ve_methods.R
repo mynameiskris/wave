@@ -174,13 +174,7 @@ tian_ve <- function(dat, n_time_points = 20, alpha = 0.05){
     
    # output
      rtn <- list(param_est = param_est, ve_dat = ve_dat)
-   # calculate lamdas for each individual
-    # lambda <- numeric(N)
-    # for (i in 1:N){
-    #   if (x$v[i] == 0) {lambda[i] <- sum(mle$par[1]*prev*c(phi_00[-1],phi_00[1]))
-    #   } else {lambda[i] <- sum(mle$par[2]*prev*c(phi_01[-1],phi_01[1]))}
-    # }
-    # ve = 1 - (sum(lambda[which(x$v == 1)])/sum(lambda[which(x$v == 0)]))
-    return(rtn)
+
+     return(rtn)
  }
 

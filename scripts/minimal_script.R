@@ -15,7 +15,7 @@ source('R/ve_methods.R')
 ### Read parameters from input files
 #   you can specify the folder and file names of the input file within the ""
 #   if no path is specified a window will pop up and allow you to choose a file from your computer
-params <- readParams()
+params <- readParams("input/SimVEE_input_Test_06.csv")
 
 ### run simulation
 #   there is an optional path argument for run_simvee(params, path = )
@@ -31,7 +31,7 @@ outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
                                         DINF_new = ifelse(DINF == 0, 999, DINF))
 
 # time points to calculate VE (use midpoint of each period)
-ve_times <- seq(1, params$ND, by = params$NDJ) + 3
+#ve_times <- seq(1, params$ND)
 ### apply VE estimation methods 
 reject_h0_durham <- reject_h0_tian <- reject_h0_ainslie <- 0
 # loop through simulations and apply each method
@@ -49,7 +49,7 @@ for (i in 1:max(outcomes_dat$Sim)){
     reject_h0_durham <- reject_h0_durham + ifelse(flu_zph$table[1,3] < 0.05, 1, 0)
   # calculate VE
   # the nsmo argument indicates the number of time points to calculate VE at 
-    temp <- durham_ve(flu_zph, n_time_points = ve_times, var = "V") %>% mutate(Sim = i, Method = "Durham")
+    temp <- durham_ve(flu_zph, n_time_points = params$ND, var = "V") %>% mutate(Sim = i, Method = "Durham")
     if (i > 1){
     ve_est <- bind_rows(ve_est,temp)
     } else {ve_est <- temp}
@@ -59,7 +59,7 @@ for (i in 1:max(outcomes_dat$Sim)){
     ######################################
     # calculate VE
     # n_timepoint_breaks argument specifies the number of time points to calculate VE for
-    temp2 <- tian_ve(outcomes_dat1, n_time_points = ve_times) 
+    temp2 <- tian_ve(outcomes_dat1, n_time_points = params$ND) 
     temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
     ve_est <- bind_rows(ve_est,temp2a)
     # proportion of sims where null hypothesis is rejected
@@ -68,7 +68,8 @@ for (i in 1:max(outcomes_dat$Sim)){
     #######################################
     ### method from Ainslie et al. 2017 ###
     #######################################
-    temp3 <- ainslie_ve(outcomes_dat1, n_days = params$ND, n_time_points = ve_times)
+    temp3 <- ainslie_ve(outcomes_dat1, n_days = params$ND, n_periods = params$NJ, 
+                        n_days_period = params$NDJ, latent_period = 1, infectious_period = 4)
     temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "Ainslie")
     ve_est <- bind_rows(ve_est,temp3a)
     # proportion of sims where null hypothesis is rejected
