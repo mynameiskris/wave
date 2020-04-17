@@ -102,12 +102,14 @@ tian_ve <- function(dat, n_time_points = 20, alpha = 0.05){
 }
 
 # Estimate VE using method from Ainslie et al. 2017 (SIM)
- ainslie_ve <- function(dat, n_days, n_time_points = 20){
+ ainslie_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infectious_period = 4){
    # calculate prevalence
    N <- length(unique(dat$ID))
    prev <- numeric(n_days)
    for (d in 1:n_days){
-     prev[d] <- length(which(dat$DINF == d))/N
+     # calculate which days individuals got infected to be infectious on day d
+     possible_day_of_infection <- (d - latent_period - infectious_period):(d - latent_period)
+     prev[d] <- length(which(dat$DINF_new %in% possible_day_of_infection))/N
    }
    prev <- ifelse(prev == 0, 0.001, prev)
    x <- list(n_days = n_days, prev = prev, dinf = dat$DINF_new, v = dat$V)
@@ -163,13 +165,12 @@ tian_ve <- function(dat, n_time_points = 20, alpha = 0.05){
     
     param_est <- tibble(param = c("beta", "theta_0", "lambda"), mle = mle$par, se = se,
                         lower = mle - 1.96 * se, upper = mle + 1.96 * se)
-
-   # calculate VE = 1 - theta_d
-    if (length(n_time_points) == 1) {
-      time_points <- seq(from = 1, to = n_days, length = n_time_points)
-    } else {time_points <- n_time_points}
     
-     ve_dat <- tibble(time = time_points, ve = 1-(mle$par[2] + mle$par[3] * time))
+    periods <- rep(1:n_periods, each = n_days_period)
+    ve_dat <- tibble(day = 1:n_days, period = periods, ve = 1-(mle$par[2] + mle$par[3] * day)) %>%
+                  select(-day) %>%
+                  group_by(period) %>%
+                  summarise_all(.funs = mean)
     
    # output
      rtn <- list(param_est = param_est, ve_dat = ve_dat)
