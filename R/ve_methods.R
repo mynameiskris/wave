@@ -1,15 +1,15 @@
 ### VE funtions
 
 # Estimate VE using method from Durham et al. 1988 (AJE)
-durham_ve <- function(x, df = 2, n_time_points = 20,var,...){
+durham_ve <- function(x, df = 2, n_days, n_periods, n_days_period, var,...){
   xx <- x$x
   yy <- x$y
   d <- nrow(yy)
   df <- max(df)
   nvar <- ncol(yy)
-  if (length(n_time_points) == 1) {
-    pred.x <- seq(from = min(xx), to = max(xx), length = n_time_points)
-  } else {pred.x <- n_time_points}
+  if (length(n_days) == 1) {
+    pred.x <- seq(from = min(xx), to = max(xx), length = n_days)
+  } else {pred.x <- n_days}
   temp <- c(pred.x, xx)
   lmat <- ns(temp, df = df, intercept = TRUE)
   pmat <- lmat[1:length(pred.x), ]
@@ -37,11 +37,13 @@ durham_ve <- function(x, df = 2, n_time_points = 20,var,...){
   yr <- range(yhat, yup, ylow)
   
   # output  
-  rtn <- tibble(time = round(pred.x), 
-                ve = as.numeric(yhat),
-                ve_lower = as.numeric(ylow),
-                ve_upper = as.numeric(yup))
-  return(rtn)
+  periods <- rep(1:n_periods, each = n_days_period)
+  ve_dat <- tibble(day = round(pred.x), period = periods, ve = as.numeric(yhat)) %>%
+    select(-day) %>%
+    group_by(period) %>%
+    summarise_all(.funs = mean)
+  
+  return(ve_dat)
 }
 
 # Estimate VE using method from Ferdinands et al. 2017 (CID?)
