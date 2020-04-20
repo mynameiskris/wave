@@ -49,7 +49,9 @@ for (i in 1:max(outcomes_dat$Sim)){
     reject_h0_durham <- reject_h0_durham + ifelse(flu_zph$table[1,3] < 0.05, 1, 0)
   # calculate VE
   # the nsmo argument indicates the number of time points to calculate VE at 
-    temp <- durham_ve(flu_zph, n_time_points = params$ND, var = "V") %>% mutate(Sim = i, Method = "Durham")
+    temp <- durham_ve(flu_zph, n_days = params$ND, n_periods = params$NJ, 
+                      n_days_period = params$NDJ,var = "V") %>% 
+      mutate(Sim = i, Method = "Durham")
     if (i > 1){
     ve_est <- bind_rows(ve_est,temp)
     } else {ve_est <- temp}
