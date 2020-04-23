@@ -61,11 +61,12 @@ for (i in 1:max(outcomes_dat$Sim)){
     ######################################
     # calculate VE
     # n_timepoint_breaks argument specifies the number of time points to calculate VE for
-    temp2 <- tian_ve(outcomes_dat1, n_time_points = params$ND) 
-    temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
-    ve_est <- bind_rows(ve_est,temp2a)
+    temp2 <- tian_ve(outcomes_dat1, n_days = params$ND, n_periods = params$NJ, 
+                     n_days_period = params$NDJ) 
+    #temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
+    #ve_est <- bind_rows(ve_est,temp2a)
     # proportion of sims where null hypothesis is rejected
-    reject_h0_tian <- reject_h0_tian + temp2$reject_h0
+    reject_h0_tian <- reject_h0_tian + temp2 #temp2$reject_h0
     
     #######################################
     ### method from Ainslie et al. 2017 ###
