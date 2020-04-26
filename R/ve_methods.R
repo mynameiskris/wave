@@ -116,70 +116,83 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
 
 # Estimate VE using method from Ainslie et al. 2017 (SIM)
  ainslie_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infectious_period = 4){
-   # calculate prevalence
+   
    N <- length(unique(dat$ID))
-   prev <- numeric(n_days)
+   prev1 <- numeric(n_days)
+   
    for (d in 1:n_days){
      # calculate which days individuals got infected to be infectious on day d
-     possible_day_of_infection <- ( d  - latent_period - infectious_period ):( d - latent_period )
+     possible_day_of_infection <- (d  - latent_period - infectious_period):(d - latent_period)
      prev[d] <- length(which(dat$DINF_new %in% possible_day_of_infection))/N
    }
    prev <- ifelse(prev == 0, 0.001, prev)
-   x <- list(n_days = n_days, prev = prev, dinf = dat$DINF_new, v = dat$V)
+   x <- list(n_days = n_days, 
+             prev = prev, 
+             dinf = dat$DINF_new, 
+             v = dat$V
+   )
    
    logLik <- function(x, par){
-     beta = par[1]
+     alpha = par[1]
      theta_0 = par[2]
      lambda = par[3]
      
-      pi_00 <- pi_01 <- pi_10 <- pi_11 <- c(1,rep(0,x$n_days-1)) 
-      phi_00 <- phi_01 <- phi_10 <- phi_11 <- c(1,rep(0,x$n_days-1)) 
-    # loop over days 
+     pi_0u <- pi_0v <- pi_1u <- pi_1v <- c(1,rep(0,x$n_days-1)) 
+     psi_0u <- psi_0v <- psi_1u <- psi_1v <- pi_0u 
+     # loop over days 
      for (d in 2:x$n_days){
-    # theta
-      theta <- theta_0 + lambda * d
-    # conditional probabilities (pi_jv, where j = infection status, v = vaccination status)
-       pi_00[d] <- 1 - beta * x$prev[d]                    # not infected, unvaccinated
-       pi_01[d] <- 1 - beta * theta * x$prev[d]            # not infected, vaccinated
-       pi_10[d] <- beta * x$prev[d]                        # infected, unvaccinated
-       pi_11[d] <- beta * theta * x$prev[d]                # infected, vaccinated
-    # unconditional probabilities (phi_jv, j = infection status, v = vaccination status)
+       # theta
+       theta_d <- theta_0 + lambda * d
+       alpha_d <- alpha * x$prev[d]
+       # conditional probabilities: pi_ju & pi_jv, where 
+       #   j = infection status, 
+       #   u = unvaccinated, 
+       #   v = vaccinated
+       pi_0u[d] <- 1 - alpha_d           
+       pi_0v[d] <- 1 - alpha_d * theta_d 
+       pi_1u[d] <- alpha_d       
+       pi_1v[d] <- alpha_d * theta_d  
+       # unconditional probabilities: psi_ju & psi_jv, where 
+       #   j = infection status,
+       #   u = unvaccinated,
+       #   v = vaccinated
        if (d == 1){
-         phi_00[d] <- pi_00[d]
-         phi_01[d] <- pi_01[d]
-         phi_10[d] <- pi_10[d]
-         phi_11[d] <- pi_11[d]
+         psi_0u[d] <- pi_0u[d]
+         psi_0v[d] <- pi_0v[d]
+         psi_1u[d] <- pi_1u[d]
+         psi_1v[d] <- pi_1v[d]
        } else {
-        phi_00[d] <- pi_00[d] * phi_00[d-1]          # not infected, unvaccinated
-        phi_01[d] <- pi_01[d] * phi_01[d-1]          # not infected, vaccinated
-        phi_10[d] <- pi_10[d] * phi_00[d-1]          # infected, unvaccinated
-        phi_11[d] <- pi_11[d] * phi_01[d-1]          # infected, vaccinated
+         psi_0u[d] <- pi_0u[d] * psi_0u[d-1]          # not infected, unvaccinated
+         psi_0v[d] <- pi_0v[d] * psi_0v[d-1]          # not infected, vaccinated
+         psi_1u[d] <- pi_1u[d] * psi_0u[d-1]          # infected, unvaccinated
+         psi_1v[d] <- pi_1v[d] * psi_0v[d-1]          # infected, vaccinated
        }
      }
-    # personal contribution to the likelihood
-      Li <- numeric(N)
-      for (i in 1:N){
-        if (x$dinf[i] < 999){
-          if (x$v[i] == 0){Li[i] <- phi_10[x$dinf[i]]
-          } else {Li[i] <- phi_11[x$dinf[i]]}
-        } else if (x$dinf[i] == 999){
-          if (x$v[i] == 0){Li[i] <- phi_00[x$n_days]
-          } else {Li[i] <- phi_01[x$n_days]}
-        }
-      }
-      
-      return(-sum(log(Li)))
+     # personal contribution to the likelihood ---------------------------------
+     Li <- numeric(N)
+     
+     for (i in 1:N){
+       if( x$dinf[i] == 999 ){
+         if( x$v[i] == 0 ){ Li[i] <- psi_0u[x$n_days] }
+         if( x$v[i] == 1 ){ Li[i] <- psi_0v[x$n_days] }
+       }
+       if ( x$dinf[i] != 999 ){
+         if( x$v[i] == 0 ){ Li[i] <- psi_1u[x$dinf[i]] }
+         if( x$v[i] == 1 ){ Li[i] <- psi_1v[x$dinf[i]] }
+       }
+     }
+     
+     return(-sum(log(Li)))
    }
-   # maximum likelihood estimates
-     mle <- optim(par = c(0.1, 0.4, 0.5), 
-                  logLik, 
-                  x = x, 
-                  method = "L-BFGS-B", 
-                  lower = c(0.0001, 0.0001, 0.0001), 
-                  upper = c(1, 1, 1), 
-                  hessian = TRUE
-                 )
-    
+   # maximum likelihood estimates ----------------------------------------------
+   mle <- optim(par = c(0.1, 0.5, 0.1), 
+                fn = logLik, 
+                x = x, 
+                method = "L-BFGS-B", 
+                lower = c(0.0001, 0.0001, 0.0001), 
+                upper = c(1, 1, 1), 
+                hessian = TRUE
+   )  
     se <- sqrt(diag(solve(mle$hessian)))
     
     param_est <- tibble(param = c("beta", "theta_0", "lambda"), mle = mle$par, se = se,
