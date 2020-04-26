@@ -121,7 +121,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    prev <- numeric(n_days)
    for (d in 1:n_days){
      # calculate which days individuals got infected to be infectious on day d
-     possible_day_of_infection <- (d - latent_period - infectious_period):(d - latent_period)
+     possible_day_of_infection <- ( d  - latent_period - infectious_period ):( d - latent_period )
      prev[d] <- length(which(dat$DINF_new %in% possible_day_of_infection))/N
    }
    prev <- ifelse(prev == 0, 0.001, prev)
@@ -167,12 +167,18 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
           } else {Li[i] <- phi_01[x$n_days]}
         }
       }
-  
+      
       return(-sum(log(Li)))
    }
    # maximum likelihood estimates
-    mle <- optim(par = c(0.1, 0.4, 0.5), logLik, x = x, method = "L-BFGS-B", lower = c(0.0001, 0.0001, 0.0001), 
-                 upper = c(1, 1, 1), hessian = TRUE)
+     mle <- optim(par = c(0.1, 0.4, 0.5), 
+                  logLik, 
+                  x = x, 
+                  method = "L-BFGS-B", 
+                  lower = c(0.0001, 0.0001, 0.0001), 
+                  upper = c(1, 1, 1), 
+                  hessian = TRUE
+                 )
     
     se <- sqrt(diag(solve(mle$hessian)))
     
