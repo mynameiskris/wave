@@ -24,7 +24,7 @@ outcomes_dat <- run_simvee(params)
 
 ### read in outcomes file
 #   you can specify the file name/path of the output file inside ""
-# outcomes_dat <- read.csv("Outcomes_Test_05.csv")
+outcomes_dat <- read.csv("Outcomes_Test_05.csv")
 
 # add FARI indicator variable
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
@@ -86,7 +86,7 @@ prop_reject_h0 <- tibble(method = c('Durham','Tian', 'Ainslie'),
                          proportion = count/params$sim)
 write.csv(prop_reject_h0,file = paste0("Reject_H0_Prop_",params$title,".csv"))
 ### mean VE from simulations at each timepoint
-mean_ve <- ve_est %>% group_by(Method, time) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
+mean_ve <- ve_est %>% group_by(Method, period) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
 write.csv(mean_ve,file = paste0("Mean_VE_Estimates_",params$title,".csv"))
 
 
