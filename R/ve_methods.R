@@ -148,10 +148,10 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
        #   j = infection status, 
        #   u = unvaccinated, 
        #   v = vaccinated
-       pi_0u[d] <- 1 - alpha_d           
-       pi_0v[d] <- 1 - alpha_d * ifelse(theta_d > 1, 1, theta_d) 
+       pi_0u[d] <- ifelse(1 - alpha_d < 0, 0.0001, 1 - alpha_d)           
+       pi_0v[d] <- ifelse(1 - alpha_d * theta_d < 0, 0.0001, 1 - alpha_d * theta_d)
        pi_1u[d] <- alpha_d       
-       pi_1v[d] <- alpha_d * ifelse(theta_d > 1, 1, theta_d)  
+       pi_1v[d] <- ifelse(alpha_d * theta_d > 1, 1, alpha_d * theta_d)
        # unconditional probabilities: psi_ju & psi_jv, where 
        #   j = infection status,
        #   u = unvaccinated,
@@ -184,8 +184,15 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
      
      return(-sum(log(Li)))
    }
+   
+   # use DE optim to get initial values
+   initial <- DEoptim(fn=logLik, 
+                      x = x,
+                      lower = c(0.0001, 0.0001, 0.0001), 
+                      upper = c(1, 1, 1)
+   )
    # maximum likelihood estimates ----------------------------------------------
-   mle <- optim(par = c(0.1, 0.5, 0.1), 
+   mle <- optim(par = initial$optim$bestmem, 
                 fn = logLik, 
                 x = x, 
                 method = "L-BFGS-B", 
