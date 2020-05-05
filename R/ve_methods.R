@@ -190,7 +190,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
                       x = x,
                       lower = c(0.0001, 0.0001, 0.0001), 
                       upper = c(1, 1, 1),
-                      control = list(trace = FALSE)
+                      control = list(itermax = 100, trace = FALSE)
    )
    # maximum likelihood estimates ----------------------------------------------
    mle <- optim(par = initial$optim$bestmem, 
