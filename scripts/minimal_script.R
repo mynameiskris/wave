@@ -15,16 +15,16 @@ source('R/ve_methods.R')
 ### Read parameters from input files
 #   you can specify the folder and file names of the input file within the ""
 #   if no path is specified a window will pop up and allow you to choose a file from your computer
-params <- readParams("input/SimVEE_input_Test_06.csv")
+params <- readParams()
 
 ### run simulation
 #   there is an optional path argument for run_simvee(params, path = )
 #   if no path is specified, it will default to current working directory
-outcomes_dat <- run_simvee(params)
+# outcomes_dat <- run_simvee(params)
 
 ### read in outcomes file
 #   you can specify the file name/path of the output file inside ""
-outcomes_dat <- read.csv("Outcomes_Test_05.csv")
+outcomes_dat <- read.csv(file.choose())
 
 # add FARI indicator variable
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
@@ -77,7 +77,11 @@ for (i in 1:max(outcomes_dat$Sim)){
     ve_est <- bind_rows(ve_est,temp3a)
     # proportion of sims where null hypothesis is rejected
     reject_h0_ainslie <- reject_h0_ainslie + ifelse(temp3$param_est$lower[3] > 0, 1, 0)
-    
+    # mle parameter estimates
+    temp3b <- temp3$param_est %>% mutate(Sim = i, Method = "Ainslie")
+    if (i > 1){
+      mle_param_est <- bind_rows(mle_param_est,temp3b)
+    } else {mle_param_est <- temp3b}
 }
 
 ### proportion of sims where H0 rejected
@@ -85,6 +89,7 @@ prop_reject_h0 <- tibble(method = c('Durham','Tian', 'Ainslie'),
                          count = c(reject_h0_durham, reject_h0_tian,reject_h0_ainslie),
                          proportion = count/params$sim)
 write.csv(prop_reject_h0,file = paste0("Reject_H0_Prop_",params$title,".csv"))
+write.csv(mle_param_est, file = "mle_parameter_estimates.csv")
 ### mean VE from simulations at each timepoint
 mean_ve <- ve_est %>% group_by(Method, period) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
 write.csv(mean_ve,file = paste0("Mean_VE_Estimates_",params$title,".csv"))
