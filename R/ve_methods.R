@@ -149,9 +149,9 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
        #   u = unvaccinated, 
        #   v = vaccinated
        pi_0u[d] <- 1 - alpha_d           
-       pi_0v[d] <- 1 - alpha_d * theta_d 
+       pi_0v[d] <- 1 - alpha_d * ifelse(theta_d > 1, 1, theta_d) 
        pi_1u[d] <- alpha_d       
-       pi_1v[d] <- alpha_d * theta_d  
+       pi_1v[d] <- alpha_d * ifelse(theta_d > 1, 1, theta_d)  
        # unconditional probabilities: psi_ju & psi_jv, where 
        #   j = infection status,
        #   u = unvaccinated,
