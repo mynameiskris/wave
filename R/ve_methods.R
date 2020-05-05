@@ -118,7 +118,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
  ainslie_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infectious_period = 4){
    
    N <- length(unique(dat$ID))
-   prev1 <- numeric(n_days)
+   prev <- numeric(n_days)
    
    for (d in 1:n_days){
      # calculate which days individuals got infected to be infectious on day d
