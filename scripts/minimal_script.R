@@ -1,12 +1,15 @@
 # SIMVEE minimal script
 # update: 7 May, 2020
+# time: 20:34
 #install.packages("timereg")
+install.pacakges("DEoptim")
 library(dplyr)
 library(foreign)
 library(survival)
 library(splines)
 library(timereg)
 library(ggplot2)
+library(DEoptim)
 
 ### Source functions from other files
 source('R/simvee.R')
