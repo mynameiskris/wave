@@ -1,4 +1,5 @@
 # SIMVEE minimal script
+# update: 7 May, 2020
 #install.packages("timereg")
 library(dplyr)
 library(foreign)
@@ -88,11 +89,11 @@ for (i in 1:max(outcomes_dat$Sim)){
 prop_reject_h0 <- tibble(method = c('Durham','Tian', 'Ainslie'),
                          count = c(reject_h0_durham, reject_h0_tian,reject_h0_ainslie),
                          proportion = count/params$sim)
-write.csv(prop_reject_h0,file = paste0("Reject_H0_Prop_",params$title,".csv"))
-write.csv(mle_param_est, file = "mle_parameter_estimates.csv")
+write.csv(prop_reject_h0,file = paste0("output/Reject_H0_Prop_",params$title,".csv"))
+write.csv(mle_param_est, file = "output/mle_parameter_estimates.csv")
 ### mean VE from simulations at each timepoint
 mean_ve <- ve_est %>% group_by(Method, period) %>% summarise_at("ve", c(mean, sd)) %>% rename(ve_mean = fn1, ve_sd = fn2)
-write.csv(mean_ve,file = paste0("Mean_VE_Estimates_",params$title,".csv"))
+write.csv(mean_ve,file = paste0("output/Mean_VE_Estimates_",params$title,".csv"))
 
 
 ### ignore this for now ###
