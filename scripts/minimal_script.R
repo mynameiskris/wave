@@ -21,7 +21,7 @@ params <- readParams()
 ### run simulation
 #   there is an optional path argument for run_simvee(params, path = )
 #   if no path is specified, it will default to current working directory
-# outcomes_dat <- run_simvee(params)
+outcomes_dat <- run_simvee(params)
 
 ### read in outcomes file
 #   you can specify the file name/path of the output file inside ""
