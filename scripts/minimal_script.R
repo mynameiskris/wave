@@ -88,6 +88,9 @@ for (i in 1:max(outcomes_dat$Sim)){
     } else {mle_param_est <- temp3b}
 }
 
+### mean mle over all sims
+mle_param_est %>% summarise_at(.vars = "mle", .funs = "mean")
+
 ### proportion of sims where H0 rejected
 prop_reject_h0 <- tibble(method = c('Durham','Tian', 'Ainslie'),
                          count = c(reject_h0_durham, reject_h0_tian,reject_h0_ainslie),
