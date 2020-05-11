@@ -1,8 +1,8 @@
 # SIMVEE minimal script
-# update: 7 May, 2020
-# time: 20:34
-#install.packages("timereg")
-install.pacakges("DEoptim")
+# update: 11 May, 2020
+# time: 13:50
+# install.packages("timereg")
+# install.packages("DEoptim")
 library(dplyr)
 library(foreign)
 library(survival)
