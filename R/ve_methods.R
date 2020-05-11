@@ -203,7 +203,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    )  
     se <- sqrt(diag(solve(mle$hessian)))
     
-    param_est <- tibble(param = c("beta", "theta_0", "lambda"), mle = mle$par, se = se,
+    param_est <- tibble(param = c("alpha", "theta_0", "lambda"), mle = mle$par, se = se,
                         lower = mle - 1.96 * se, upper = mle + 1.96 * se)
     
     periods <- rep(1:n_periods, each = n_days_period)
