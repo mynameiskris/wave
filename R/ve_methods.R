@@ -197,7 +197,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
                 fn = logLik, 
                 x = x, 
                 method = "L-BFGS-B", 
-                lower = c(0.0001, 0.0001, 0.0001), 
+                lower = c(0.0001, 0.0001, -1), 
                 upper = c(1, 1, 1), 
                 hessian = TRUE
    )  
