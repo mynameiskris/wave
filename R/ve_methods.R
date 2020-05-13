@@ -143,10 +143,16 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
      
      pi_0u <- pi_0v <- pi_1u <- pi_1v <- c(1,rep(0,x$n_days-1)) 
      psi_0u <- psi_0v <- psi_1u <- psi_1v <- pi_0u 
+     
+     #initialise period
+     period <- 1
+     period_start_days <- seq(1, params$ND, by = params$NDJ)
      # loop over days 
      for (d in 2:x$n_days){
+       if(d %in% period_start_days){period <- period + 1}
+       print(period)
        # theta
-       theta_d <- theta_0 + lambda * d
+       theta_d <- theta_0 + lambda * period
        alpha_d <- alpha * x$prev[d]
        # conditional probabilities: pi_ju & pi_jv, where 
        #   j = infection status, 
@@ -192,19 +198,25 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    # use DE optim to get initial values
    initial <- DEoptim(fn=logLik, 
                       x = x,
-                      lower = c(0.0001, 0.0001, 0.0001), 
+                      lower = c(0.0001, 0.0001, -1), 
                       upper = c(1, 1, 1),
                       control = list(itermax = 100, trace = FALSE)
    )
+   print(initial$optim$bestmem)
    # maximum likelihood estimates ----------------------------------------------
+   #tryCatch({
    mle <- optim(par = initial$optim$bestmem, 
                 fn = logLik, 
                 x = x, 
-                method = "BFGS", 
+                method = "Nelder-Mead", 
                 #lower = c(0.0001, 0.0001, -1), 
                 #upper = c(1, 1, 1), 
-                hessian = TRUE
+                hessian = TRUE,
+                control = list(trace = 3,
+                               maxit = 1000,
+                               ndeps = 1e-4)
    )  
+   #}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
     se <- sqrt(diag(solve(mle$hessian)))
     
     param_est <- tibble(param = c("alpha", "theta_0", "lambda"), mle = mle$par, se = se,
