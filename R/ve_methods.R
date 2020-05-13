@@ -1,6 +1,7 @@
-### VE funtions
+# VE funtions
+# --------------------------------------------------------------------------------------------------------
 
-# Estimate VE using method from Durham et al. 1988 (AJE)
+# Estimate VE using method from Durham et al. 1988 (AJE) -------------------------------------------------
 durham_ve <- function(x, df = 2, n_days, n_periods, n_days_period, var,...){
   xx <- x$x
   yy <- x$y
@@ -45,8 +46,9 @@ durham_ve <- function(x, df = 2, n_days, n_periods, n_days_period, var,...){
   
   return(ve_dat)
 }
+# --------------------------------------------------------------------------------------------------------
 
-# Estimate VE using method from Ferdinands et al. 2017 (CID?)
+# Estimate VE using method from Ferdinands et al. 2017 (CID?) --------------------------------------------
 ferdinands_ve <- function(dat, splines = FALSE){
   
   if (splines == FALSE){ # fit logistic regression model with dichotomous vaccination variable
@@ -78,8 +80,9 @@ ferdinands_ve <- function(dat, splines = FALSE){
   return(rtn)
   
 }
+# --------------------------------------------------------------------------------------------------------
 
-# Estimate VE using method from Tian et al. 2005 
+# Estimate VE using method from Tian et al. 2005 ---------------------------------------------------------
 tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
   reject_h0 <- 0
   # fit timecox model
@@ -113,8 +116,9 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
   return(reject_h0)
   #list(output = ve_dat, reject_h0 = reject_h0)
 }
+# --------------------------------------------------------------------------------------------------------
 
-# Estimate VE using method from Ainslie et al. 2017 (SIM)
+# Estimate VE using method from Ainslie et al. 2017 (SIM) ------------------------------------------------
  ainslie_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infectious_period = 4){
    
    N <- length(unique(dat$ID))
@@ -196,9 +200,9 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    mle <- optim(par = initial$optim$bestmem, 
                 fn = logLik, 
                 x = x, 
-                method = "L-BFGS-B", 
-                lower = c(0.0001, 0.0001, -1), 
-                upper = c(1, 1, 1), 
+                method = "BFGS", 
+                #lower = c(0.0001, 0.0001, -1), 
+                #upper = c(1, 1, 1), 
                 hessian = TRUE
    )  
     se <- sqrt(diag(solve(mle$hessian)))
@@ -217,4 +221,94 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
 
      return(rtn)
  }
+# --------------------------------------------------------------------------------------------------------
 
+estimate_ve <- function(dat = outcomes_dat, params, write_to_file = TRUE, path = "output/"){
+   
+# initialise count of number of simulations in which H0 is rehected --------------------------------------
+   reject_h0_durham <- reject_h0_tian <- reject_h0_ainslie <- 0
+
+# loop through simulations and apply each method ---------------------------------------------------------
+   for (i in 1:max(outcomes_dat$Sim)){
+     print(i)
+     
+    # subset data for each simulation---------------------------------------------------------------------
+      outcomes_dat1 <- outcomes_dat %>% filter(Sim == i)
+      
+# method from Durham et al. 1988 -------------------------------------------------------------------------
+      
+# fit ordinary Cox propotional hazards model -------------------------------------------------------------
+  flu_coxmod <- coxph(Surv(DINF_new,FARI) ~ V, data=outcomes_dat1)
+  
+# test the proportional hazards assumption and compute the Schoenfeld residuals ($y) ---------------------
+  flu_zph <- cox.zph(fit = flu_coxmod, transform = "identity")
+  reject_h0_durham <- reject_h0_durham + ifelse(flu_zph$table[1,3] < 0.05, 1, 0)
+  
+# calculate VE -------------------------------------------------------------------------------------------
+# the nsmo argument indicates the number of time points to calculate VE at 
+  temp <- durham_ve(flu_zph, n_days = params$ND, n_periods = params$NJ, 
+                    n_days_period = params$NDJ,var = "V") %>% 
+    mutate(Sim = i, Method = "Durham")
+
+# bind results together ----------------------------------------------------------------------------------  
+  if (i > 1){
+    ve_est <- bind_rows(ve_est,temp)
+  } else {ve_est <- temp}
+     
+
+# method from Tian et al. 2005 ---------------------------------------------------------------------------
+
+     # calculate VE
+     # n_timepoint_breaks argument specifies the number of time points to calculate VE for
+     temp2 <- tian_ve(outcomes_dat1, n_days = params$ND, n_periods = params$NJ, 
+                      n_days_period = params$NDJ) 
+     #temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
+     #ve_est <- bind_rows(ve_est,temp2a)
+     # proportion of sims where null hypothesis is rejected
+     reject_h0_tian <- reject_h0_tian + temp2 #temp2$reject_h0
+     
+
+# method from Ainslie et al. 2017 ------------------------------------------------------------------------
+
+     temp3 <- ainslie_ve(outcomes_dat1, n_days = params$ND, n_periods = params$NJ, 
+                         n_days_period = params$NDJ, latent_period = 1, infectious_period = 4)
+     temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "Ainslie")
+     ve_est <- bind_rows(ve_est,temp3a)
+     
+     # proportion of sims where null hypothesis is rejected
+     reject_h0_ainslie <- reject_h0_ainslie + ifelse(temp3$param_est$lower[3] > 0, 1, 0)
+     
+     # mle parameter estimates
+     temp3b <- temp3$param_est %>% mutate(Sim = i, Method = "Ainslie")
+     if (i > 1){
+       mle_param_est <- bind_rows(mle_param_est,temp3b)
+     } else {mle_param_est <- temp3b}
+   }
+
+# outputs ------------------------------------------------------------------------------------------------
+   prop_reject_h0 <- tibble(method = c('Durham','Tian', 'Ainslie'),
+                            count = c(reject_h0_durham, reject_h0_tian,reject_h0_ainslie),
+                            proportion = count/params$sim)
+   mean_ve <- ve_est %>% 
+     group_by(Method, period) %>% 
+     summarise_at("ve", c(mean, sd)) %>% 
+     rename(ve_mean = fn1, ve_sd = fn2)
+   
+   mean_mle_params <- mle_param_est %>% 
+     summarise_at(.vars = "mle", .funs = "mean")
+   
+   rtn <- list(ve_est = ve_est, 
+               mle_param_est = mle_param_est, 
+               prop_reject_h0 = prop_reject_h0,
+               mean_ve = mean_ve,
+               mean_mle_params = mean_mle_params)
+   
+   if(write_to_file){
+     write.csv(prop_reject_h0,file = paste0(path,"reject_h0_prop_",params$title,".csv"))
+     write.csv(mle_param_est, file = paste0(path,"mle_parameter_estimates_",params$title,".csv"))
+     write.csv(mean_ve,file = paste0(path,"mean_ve_estimates_",params$title,".csv"))
+   }
+   
+   return(rtn)
+   
+ }
