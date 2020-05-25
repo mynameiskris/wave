@@ -196,16 +196,16 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    }
    
    # use DE optim to get initial values
-   initial <- DEoptim(fn=logLik, 
-                      x = x,
-                      lower = c(0.0001, 0.0001, 0.0001), 
-                      upper = c(1, 1, 2),
-                      control = list(itermax = 100, trace = FALSE)
-   )
-   print(initial$optim$bestmem)
+   # initial <- DEoptim(fn=logLik, 
+   #                    x = x,
+   #                    lower = c(0.0001, 0.0001, 0.0001), 
+   #                    upper = c(1, 1, 2),
+   #                    control = list(itermax = 100, trace = FALSE)
+   # )
+   # print(initial$optim$bestmem)
    # maximum likelihood estimates ----------------------------------------------
    #tryCatch({
-   mle <- optim(par = initial$optim$bestmem, 
+   mle <- optim(par = c(0.3, 0.4, 1), 
                 fn = logLik, 
                 x = x, 
                 method = "L-BFGS-B", 
@@ -307,6 +307,7 @@ estimate_ve <- function(dat = outcomes_dat, params, write_to_file = TRUE, path =
      rename(ve_mean = fn1, ve_sd = fn2)
    
    mean_mle_params <- mle_param_est %>% 
+     group_by(param)
      summarise_at(.vars = "mle", .funs = "mean")
    
    rtn <- list(ve_est = ve_est, 
