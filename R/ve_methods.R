@@ -307,7 +307,7 @@ estimate_ve <- function(dat = outcomes_dat, params, write_to_file = TRUE, path =
      rename(ve_mean = fn1, ve_sd = fn2)
    
    mean_mle_params <- mle_param_est %>% 
-     group_by(param)
+     group_by(param) %>%
      summarise_at(.vars = "mle", .funs = "mean")
    
    rtn <- list(ve_est = ve_est, 
