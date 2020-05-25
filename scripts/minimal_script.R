@@ -37,6 +37,11 @@ outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
 # apply VE estimation methods 
 ve_estimates <- estimate_ve(dat = outcomes_dat, params)
 
+# print proportion of null hypotheses rejected
+ve_estimates$prop_reject_h0
+
+# print mean mle parameter estimates
+ve_estimates$mean_mle_params
 
 
 
