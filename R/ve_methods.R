@@ -139,7 +139,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    logLik <- function(x, par){
      alpha = par[1]
      theta_0 = par[2]
-     lambda = par[3]
+     phi = par[3]
      
      pi_0u <- pi_0v <- pi_1u <- pi_1v <- c(1,rep(0,x$n_days-1)) 
      psi_0u <- psi_0v <- psi_1u <- psi_1v <- pi_0u 
@@ -151,7 +151,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
      for (d in 2:x$n_days){
        if(d %in% period_start_days){period <- period + 1}
        #print(period)
-       # theta
+       lambda <- phi - 1
        theta_d <- theta_0 + lambda * period
        alpha_d <- alpha * x$prev[d]
        # conditional probabilities: pi_ju & pi_jv, where 
@@ -199,7 +199,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    initial <- DEoptim(fn=logLik, 
                       x = x,
                       lower = c(0.0001, 0.0001, 0.0001), 
-                      upper = c(1, 1, 1),
+                      upper = c(1, 1, 2),
                       control = list(itermax = 100, trace = FALSE)
    )
    print(initial$optim$bestmem)
@@ -209,8 +209,8 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
                 fn = logLik, 
                 x = x, 
                 method = "L-BFGS-B", 
-                lower = c(0.0001, 0.0001, -1), 
-                upper = c(1, 1, 1), 
+                lower = c(0.0001, 0.0001, 0.0001), 
+                upper = c(1, 1, 2), 
                 hessian = TRUE
                 # control = list(trace = 3,
                 #                maxit = 1000,
@@ -219,11 +219,11 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    #}, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
     se <- sqrt(diag(solve(mle$hessian)))
     
-    param_est <- tibble(param = c("alpha", "theta_0", "lambda"), mle = mle$par, se = se,
+    param_est <- tibble(param = c("alpha", "theta_0", "lambda"), mle = mle$par - c(0,0,1), se = se,
                         lower = mle - 1.96 * se, upper = mle + 1.96 * se)
     
     periods <- rep(1:n_periods, each = n_days_period)
-    ve_dat <- tibble(day = 1:n_days, period = periods, ve = 1-(mle$par[2] + mle$par[3] * day)) %>%
+    ve_dat <- tibble(day = 1:n_days, period = periods, ve = 1-(mle$par[2] + (mle$par[3] - 1) * day)) %>%
                   select(-day) %>%
                   group_by(period) %>%
                   summarise_all(.funs = mean)
