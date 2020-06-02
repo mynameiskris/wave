@@ -1,3 +1,4 @@
 ^wave\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^\.travis\.yml$

@@ -1,6 +1,7 @@
 # wave
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.org/fluvee/simvee.svg?branch=master)](https://travis-ci.org/fluvee/simvee)
 <!-- badges: end -->
 
 The goal of wave is to ...
