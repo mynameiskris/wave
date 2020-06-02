@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 blah blah blah ...
 
 ## Setup
-```{r setup}
+```{r setup, eval = FALSE}
 # Load wave -----------------------------------------------------------------------------
 library(wave)
 
@@ -32,7 +32,7 @@ library(wave)
 ## Run program
 
 ### Read in parameter input file
-```{r params}
+```{r params, eval = FALSE}
 # read parameters from input files ------------------------------------------------------
 params <- readParams()
 # user can specify the folder and file names of the input file within the ""
@@ -40,7 +40,7 @@ params <- readParams()
 ```
 
 ### Run simulation 
-```{r sim}
+```{r sim, eval = FALSE}
 # run simulation -----------------------------------------------------------------------
 outcomes_dat <- run_simvee(params)
 #   there is an optional path argument for run_simvee(params, path = )
@@ -49,7 +49,7 @@ outcomes_dat <- run_simvee(params)
 ```
 
 ### Apply VE estimation methods
-```{r ve}
+```{r ve, eval = FALSE}
 # rather re-run the simulation program, user can read in outcomes file
 # you can specify the file name/path of the output file inside ""
 # outcomes_dat <- read.csv(file.choose())
