@@ -3,19 +3,21 @@
 # time: 18:02
 # install.packages("timereg")
 # install.packages("DEoptim")
-library(dplyr)
-library(foreign)
-library(survival)
-library(splines)
-library(timereg)
-library(ggplot2)
+# library(dplyr)
+# library(foreign)
+# library(survival)
+# library(splines)
+# library(timereg)
+# library(ggplot2)
 # library(DEoptim)
 
 ### Source functions from other files
-source('R/simvee.R')
-source('R/readParams.R')
-source('R/ve_methods.R')
+# source('R/simvee.R')
+# source('R/readParams.R')
+# source('R/ve_methods.R')
 
+### Load wave package
+devtools::load_all("~/Documents/wave/")
 ### Read parameters from input files
 #   you can specify the folder and file names of the input file within the ""
 #   if no path is specified a window will pop up and allow you to choose a file from your computer
