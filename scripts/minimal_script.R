@@ -9,7 +9,7 @@ library(survival)
 library(splines)
 library(timereg)
 library(ggplot2)
-library(DEoptim)
+# library(DEoptim)
 
 ### Source functions from other files
 source('R/simvee.R')
@@ -34,7 +34,7 @@ outcomes_dat <- run_simvee(params)
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
                                         DINF_new = ifelse(DINF == 0, 999, DINF))
 
-# apply VE estimation methods 
+# apply VE estimation methods
 ve_estimates <- estimate_ve(dat = outcomes_dat, params)
 
 # print proportion of null hypotheses rejected
