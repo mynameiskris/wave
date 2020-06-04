@@ -52,7 +52,7 @@ Next, let  π_itj=Pra({Y_it=j|Y_i(t-1) =0)}  be the conditional probability that
 (j=0,1,2) given that s/he was susceptible at the end of the previous day. If person i is unvaccinated then
 π_it0=1-λ_t,  π_it1=λ_t,  π_it2=0. If person i is vaccinated then λ_t in the last equations is replaced by
 λ_t∙θ_t . Denoting by ψ_itj=Pra(a{Y_it=j)} the unconditional probabilities of Y_it, it is easy to see tha
-t ψ_it0= ψ_(i(t-1)0)∙ π_it0,  〖〖 ψ〗_it1=ψ〗_(i(t-1)0)∙ π_it1, 〖  ψ〗_it2= 1-(ψ_it0+ψ_it1).
+t ψ_it0= ψ_(i(t-1)0)∙ π_it0, ψ_it1=ψ_(i(t-1)0)∙ π_it1,  ψ_it2= 1-(ψ_it0+ψ_it1).
 
 We now can write the contribution of each study subject to the likelihood function in terms of the
 unconditional probabilities ψ_itj. The contribution of a person who became infected on day t  is
