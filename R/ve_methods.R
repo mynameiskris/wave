@@ -79,7 +79,6 @@ durham_ve <- function(x, df = 2, n_days, n_periods, n_days_period, var,...){
 #' @return estimates of the likelihood ratio under each model and the difference between the two models.
 #' @keywords wave
 #' @import splines
-#' @import stats
 #' @import dplyr
 #' @import tidyr
 #' @export
@@ -226,7 +225,6 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
 #' @return list with a tibble of VE estimates for each period (the estimate for each period is the average VE over the days
 #' within each period) and the maximu likelihood estimates of the parameters.
 #' @keywords wave
-#' @import stats
 #' @import dplyr
 #' @import tidyr
 #' @export
