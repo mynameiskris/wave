@@ -4,9 +4,6 @@
 #' @param filename path to csv file
 #' @return list of parameters
 #' @keywords wave
-#' @import survival
-#' @import dplyr
-#' @import tidyr
 #' @export
 readParams = function(filename = NULL) {
   if(is.null(filename))(filename = file.choose())
