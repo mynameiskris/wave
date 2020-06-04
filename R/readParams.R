@@ -1,16 +1,26 @@
+#' Read in parameters
+#'
+#' Function reads in parameters for simulation from a csv file
+#' @param filename path to csv file
+#' @return list of parameters
+#' @keywords wave
+#' @import survival
+#' @import dplyr
+#' @import tidyr
+#' @export
 readParams = function(filename = NULL) {
   if(is.null(filename))(filename = file.choose())
   para <- list()
   Y <- readLines(filename, warn = FALSE)
-  
+
   para$title <- strsplit(Y[grep("Title",Y)],',')[[1]][2]
   para$sim <- as.numeric(strsplit(Y[grep("Number of simulations",Y)],',')[[1]][2])
   para$rseed <- as.numeric(strsplit(Y[grep("Seed",Y)],',')[[1]][2])
   para$all_or_no_vaccine <- as.numeric(strsplit(Y[grep("Leaky or all-or-none vaccine",Y)],',')[[1]][2])
-  
-  para$sas <- as.character(strsplit(Y[grep("Output files in sas format",Y)],',')[[1]][2]=="yes",TRUE,FALSE) 
-  para$csv <- as.character(strsplit(Y[grep("Output files in csv format",Y)],',')[[1]][2]=="yes",TRUE,FALSE) 
-  para$inputsfile <- ifelse(strsplit(Y[grep("Input and calculated parameters",Y)],',')[[1]][2]=="yes",TRUE,FALSE) 
+
+  para$sas <- as.character(strsplit(Y[grep("Output files in sas format",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
+  para$csv <- as.character(strsplit(Y[grep("Output files in csv format",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
+  para$inputsfile <- ifelse(strsplit(Y[grep("Input and calculated parameters",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$detailed_file <- ifelse(strsplit(Y[grep("Detailed for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$daily_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-daily for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
 # para$period_each_sim_file <- ifelse(strsplit(Y[grep("Incidence-period for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
@@ -20,7 +30,7 @@ readParams = function(filename = NULL) {
   para$seasonal_overall_file <- ifelse(strsplit(Y[grep("Incidence-total means over all simulations",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$population_report_file <- ifelse(strsplit(Y[grep("Outcomes for each simulation",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
   para$timestamp <- ifelse(strsplit(Y[grep("Add timestamp to output file names",Y)],',')[[1]][2]=="yes",TRUE,FALSE)
-  
+
   para$NDJ <- as.numeric(strsplit(Y[grep("Number of days in each period",Y)],',')[[1]][2])
   para$NJ <- as.numeric(strsplit(Y[grep("Number of periods in the study",Y)],',')[[1]][2])
   para$ND <- as.numeric(strsplit(Y[grep("Number of days in the study",Y)],',')[[1]][2])
@@ -46,7 +56,7 @@ readParams = function(filename = NULL) {
     para$theta_d <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection for V=1",Y)],',')[[1]][2])
   }
   para$phi <- as.numeric(strsplit(Y[grep("Multiplier for daily probability of infection when X=0",Y)],',')[[1]][2])
-  
-  
+
+
   return(para)
 }
