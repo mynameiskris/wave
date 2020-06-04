@@ -4,7 +4,7 @@
 \alias{durham_ve}
 \title{Estimate VE using method from Durham et al. 1988 (AJE)}
 \usage{
-durham_ve(x, df = 2, n_days, n_periods, n_days_period, var, ...)
+durham_ve(x, df = 2, n_days, n_periods, n_days_period, var)
 }
 \arguments{
 \item{x}{survival object}
