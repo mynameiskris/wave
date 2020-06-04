@@ -122,7 +122,7 @@ ferdinands_ve <- function(dat, splines = FALSE){
 #' In this method, kernel-weighted partial likelihood approach is used to estimate the time-dependent coefficient
 #' in the generalized Cox model [REF] .  At each time point, the estimate is obtained by maximizing a smooth
 #' concave function of a p x 1 vector of parameters, where p is the dimension of the vector of covariates. The
-#' (1-α) confidence bands for the time-dependent coefficient \beta(t) can be obtained by \beta(t) ±c_α w ̂〖(t)〗^(-1
+#' (1-α) confidence bands for the time-dependent coefficient β(t) can be obtained by β(t) ±c_α w ̂〖(t)〗^(-1
 #' ), where t is in the time interval of interest (b_1≤t≤b_2), c_α is the 100(1-α)th percentile the approximate
 #' distribution of β ̂(t), and w ̂(t) is a positive weighting function. To test the hypothesis of no VE waning
 #' (i.e., the proportional hazards assumption is met), confidence bands from the distribution of the estimated
@@ -199,7 +199,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
 #' (j=0,1,2) given that s/he was susceptible at the end of the previous day. If person i is unvaccinated then
 #' π_it0=1-λ_t,  π_it1=λ_t,  π_it2=0. If person i is vaccinated then λ_t in the last equations is replaced by
 #' λ_t∙θ_t . Denoting by ψ_itj=Pra(a{Y_it=j)} the unconditional probabilities of Y_it, it is easy to see tha
-#' t ψ_it0= ψ_(i(t-1)0)∙ π_it0,  〖〖 ψ〗_it1=ψ〗_(i(t-1)0)∙ π_it1, 〖  ψ〗_it2= 1-(ψ_it0+ψ_it1).
+#' t ψ_it0= ψ_(i(t-1)0)∙ π_it0, ψ_it1=ψ_(i(t-1)0)∙ π_it1,  ψ_it2= 1-(ψ_it0+ψ_it1).
 #'
 #' We now can write the contribution of each study subject to the likelihood function in terms of the
 #' unconditional probabilities ψ_itj. The contribution of a person who became infected on day t  is
