@@ -1,0 +1,26 @@
+Package: wave
+Title: Waning Vaccine Effectiveness
+Version: 0.1.0
+Authors@R: 
+    person(given = "Kylie",
+           family = "Ainslie",
+           role = c("aut", "cre"),
+           email = "ainslie.kylie@gmail.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Estimates waning vaccine effectiveness.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    tidyr,
+    survival,
+    foreign,
+    splines,
+    timereg
+Suggests: 
+    testthat (>= 2.1.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.1.0
