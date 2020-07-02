@@ -227,6 +227,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
 #' @keywords wave
 #' @import dplyr
 #' @import tidyr
+#' @import xlsx
 #' @export
  ainslie_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infectious_period = 4){
 
@@ -314,6 +315,7 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
    # print(initial$optim$bestmem)
    # maximum likelihood estimates ----------------------------------------------
    #tryCatch({
+
    mle <- optim(par = c(0.3, 0.4, 1),
                 fn = logLik,
                 x = x,
@@ -443,9 +445,11 @@ estimate_ve <- function(dat = outcomes_dat, params, write_to_file = TRUE, path =
                mean_mle_params = mean_mle_params)
 
    if(write_to_file){
-     write.csv(prop_reject_h0,file = paste0(path,"reject_h0_prop_",params$title,".csv"))
-     write.csv(mle_param_est, file = paste0(path,"mle_parameter_estimates_",params$title,".csv"))
-     write.csv(mean_ve,file = paste0(path,"mean_ve_estimates_",params$title,".csv"))
+     write.xlsx(ve_est, file="output.xlsx",sheetName="ve_estimates", row.names=F )
+     write.xlsx(ve_est, file="output.xlsx",sheetName="mle_parameter_estimates_",append = T, row.names=F )
+     write.xlsx(ve_est, file="output.xlsx",sheetName="reject_h0_prop_",append = T, row.names=F )
+     write.xlsx(ve_est, file="output.xlsx",sheetName="mean_ve",append = T, row.names=F )
+     write.xlsx(ve_est, file="output.xlsx",sheetName="mle_parameter_estimates_",append = T, row.names=F )
    }
 
    return(rtn)
