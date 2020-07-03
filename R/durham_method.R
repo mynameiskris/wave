@@ -59,7 +59,7 @@ durham_ve <- function(x, df = 2, n_days, n_periods, n_days_period, var){
 
   # output
   periods <- rep(1:n_periods, each = n_days_period)
-  ve_dat <- tibble(day = round(pred.x), period = periods, ve = as.numeric(yhat)) %>%
+  ve_dat <- data.frame(day = round(pred.x), period = periods, ve = as.numeric(yhat)) %>%
     select(-day) %>%
     group_by(period) %>%
     summarise_all(.funs = mean)
