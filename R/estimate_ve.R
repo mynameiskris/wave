@@ -15,17 +15,17 @@
 #' @import dplyr
 #' @import tidyr
 #' @export
-estimate_ve <- function(dat = outcomes_dat, params, write_to_file = TRUE, path = getwd()){
+estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
 
 # initialise count of number of simulations in which H0 is rehected --------------------------------------
    reject_h0_durham <- reject_h0_tian <- reject_h0_ml <- 0
 
 # loop through simulations and apply each method ---------------------------------------------------------
-   for (i in 1:max(outcomes_dat$Sim)){
+   for (i in 1:max(dat$Sim)){
      print(i)
 
     # subset data for each simulation---------------------------------------------------------------------
-      outcomes_dat1 <- outcomes_dat %>% filter(Sim == i)
+      outcomes_dat1 <- dat %>% filter(.data$Sim == i)
 
 # method from Durham et al. 1988 -------------------------------------------------------------------------
 
@@ -82,12 +82,12 @@ estimate_ve <- function(dat = outcomes_dat, params, write_to_file = TRUE, path =
                             count = c(reject_h0_durham, reject_h0_tian,reject_h0_ml),
                             proportion = count/params$sim)
    mean_ve <- ve_est %>%
-     group_by(Method, period) %>%
+     group_by(.data$Method, .data$period) %>%
      summarise_at("ve", c(mean, sd)) %>%
-     rename(ve_mean = fn1, ve_sd = fn2)
+     rename(ve_mean = .data$fn1, ve_sd = .data$fn2)
 
    mean_mle_params <- mle_param_est %>%
-     group_by(param) %>%
+     group_by(.data$param) %>%
      summarise_at(.vars = "mle", .funs = "mean")
 
    rtn <- list(ve_est = ve_est,

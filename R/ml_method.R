@@ -18,7 +18,7 @@ logLik <- function(x, par){
 
   #initialise period
   period <- 1
-  period_start_days <- seq(1, params$ND, by = params$NDJ)
+  period_start_days <- seq(1, x$n_days, by = x$n_days_period)
   # loop over days
   for (d in 2:x$n_days){
     if(d %in% period_start_days){period <- period + 1}
@@ -51,9 +51,9 @@ logLik <- function(x, par){
     }
   }
   # personal contribution to the likelihood ---------------------------------
-  Li <- numeric(N)
+  Li <- numeric(x$n)
 
-  for (i in 1:N){
+  for (i in 1:x$n){
     if( x$dinf[i] == 999 ){
       if( x$v[i] == 0 ){ Li[i] <- psi_0u[x$n_days] }
       if( x$v[i] == 1 ){ Li[i] <- psi_0v[x$n_days] }
@@ -95,7 +95,9 @@ ml_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infe
     prev[d] <- length(which(dat$DINF_new %in% possible_day_of_infection))/N
   }
   prev <- ifelse(prev == 0, 0.001, prev)
-  x <- list(n_days = n_days,
+  x <- list(n = N,
+            n_days = n_days,
+            n_days_period = n_days_period,
             prev = prev,
             dinf = dat$DINF_new,
             v = dat$V
@@ -130,9 +132,9 @@ ml_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infe
                       lower = mle - 1.96 * se, upper = mle + 1.96 * se)
 
   periods <- rep(1:n_periods, each = n_days_period)
-  ve_dat <- tibble(day = 1:n_days, period = periods, ve = 1-(mle$par[2] + (mle$par[3] - 1) * day)) %>%
-    select(-day) %>%
-    group_by(period) %>%
+  ve_dat <- tibble(day = 1:n_days, period = periods, ve = 1-(mle$par[2] + (mle$par[3] - 1) * .data$day)) %>%
+    select(-.data$day) %>%
+    group_by(.data$period) %>%
     summarise_all(.funs = mean)
 
   # output

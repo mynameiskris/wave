@@ -4,7 +4,7 @@
 \alias{estimate_ve}
 \title{Apply different VE estimation methods}
 \usage{
-estimate_ve(dat = outcomes_dat, params, write_to_file = TRUE, path = getwd())
+estimate_ve(dat, params, write_to_file = TRUE, path = getwd())
 }
 \arguments{
 \item{dat}{data set}
