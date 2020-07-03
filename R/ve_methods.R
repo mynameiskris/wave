@@ -121,11 +121,11 @@ ferdinands_ve <- function(dat, splines = FALSE){
 #' In this method, kernel-weighted partial likelihood approach is used to estimate the time-dependent coefficient
 #' in the generalized Cox model [REF] .  At each time point, the estimate is obtained by maximizing a smooth
 #' concave function of a p x 1 vector of parameters, where p is the dimension of the vector of covariates. The
-#' (1-α) confidence bands for the time-dependent coefficient β(t) can be obtained by β(t) ±c_α w ̂〖(t)〗^(-1
-#' ), where t is in the time interval of interest (b_1≤t≤b_2), c_α is the 100(1-α)th percentile the approximate
-#' distribution of β ̂(t), and w ̂(t) is a positive weighting function. To test the hypothesis of no VE waning
+#' (1-alpha) confidence bands for the time-dependent coefficient beta(t) can be obtained by beta(t) ±c_alpha w [(t)]^(-1
+#' ), where t is in the time interval of interest (b_1≤t≤b_2), c_alpha is the 100(1-alpha)th percentile the approximate
+#' distribution of beta(t)_hat, and w(t)_hat is a positive weighting function. To test the hypothesis of no VE waning
 #' (i.e., the proportional hazards assumption is met), confidence bands from the distribution of the estimated
-#' cumulative function of β ̂(t) can be obtained. If the line (0,0) is not contained within the confidence band
+#' cumulative function of beta(t)_hat) can be obtained. If the line (0,0) is not contained within the confidence band
 #' s over the entire time interval, then the proportional hazards assumption is not met and the null hypothesis
 #' of no VE waning is rejected.
 #' @param dat data set
@@ -180,42 +180,42 @@ tian_ve <- function(dat, n_days, n_periods, n_days_period, alpha = 0.05){
 #'
 #' This method is similar to that of Ainslie et al. 2017 (SIM). The ML method is based on calculating the
 #' contribution to the likelihood function of each study participant. Let t (t=1,2,…T) denote the number
-#' of days since vaccination or receipt of the placebo. Denote λ_d  = hazard of infection of an unvaccinated
-#' susceptible person on day t  . P(t) denotes the probability that a randomly selected population member
+#' of days since vaccination or receipt of the placebo. Denote lambda_d = hazard of infection of an unvaccinated
+#' susceptible person on day t. P(t) denotes the probability that a randomly selected population member
 #' is infectious on day t  (prevalence of infection). We assume that the hazard of infection is proportional
-#' to the prevalence: λ_t=λ∙P(t). A method for estimatingon the prevalence is described later. Next, let θ_t
-#' be defined such that the hazard of a vaccinated susceptible person on day t  is λ_t∙θ_t. Then the TVE
+#' to the prevalence: lambda_t=lambda∙P(t). A method for estimatingon the prevalence is described later. Next, let theta_t
+#' be defined such that the hazard of a vaccinated susceptible person on day t is lambda_t∙theta_t. Then the TVE
 #' on day t, defined as one minus the ratio of the hazards of infection for an unvaccinated and a
-#' vaccinated person on that day is 〖1-θ〗_t. Next, we define a status variable for each study participant
+#' vaccinated person on that day is [1-theta]_t. Next, we define a status variable for each study participant
 #' i (i=1,2,…N) on each day t:
 #' * Y_it=0 if this person remained susceptible by the end of the day,
 #' * Y_it=1 if this person became infected on this day, and
 #' * Y_it=2 if this person became infected before this day.
 #' (A person with Y_it=2 may still be infectious to others; we use this notation to indicate that this person
-#' is no longer at risk of becoming infected). We assume that on day 0 everyone is susceptible, i.e., Y_i0≡0.
+#' is no longer at risk of becoming infected). We assume that on day 0 everyone is susceptible, i.e., Y_i0=0.
 #'
-#' Next, let  π_itj=Pra({Y_it=j|Y_i(t-1) =0)}  be the conditional probability that person i is in status j
+#' Next, let  pi_itj=Pra({Y_it=j|Y_i(t-1) =0)}  be the conditional probability that person i is in status j
 #' (j=0,1,2) given that s/he was susceptible at the end of the previous day. If person i is unvaccinated then
-#' π_it0=1-λ_t,  π_it1=λ_t,  π_it2=0. If person i is vaccinated then λ_t in the last equations is replaced by
-#' λ_t∙θ_t . Denoting by ψ_itj=Pra(a{Y_it=j)} the unconditional probabilities of Y_it, it is easy to see tha
-#' t ψ_it0= ψ_(i(t-1)0)∙ π_it0, ψ_it1=ψ_(i(t-1)0)∙ π_it1,  ψ_it2= 1-(ψ_it0+ψ_it1).
+#' pi_it0=1-lambda_t,  pi_it1=lambda_t,  pi_it2=0. If person i is vaccinated then lambda_t in the last equations is replaced by
+#' lambda_t∙theta_t . Denoting by psi_itj=Pra(a{Y_it=j)} the unconditional probabilities of Y_it, it is easy to see tha
+#' t psi_it0= psi_(i(t-1)0)∙ pi_it0, psi_it1=psi_(i(t-1)0)∙ pi_it1,  psi_it2= 1-(psi_it0+psi_it1).
 #'
 #' We now can write the contribution of each study subject to the likelihood function in terms of the
-#' unconditional probabilities ψ_itj. The contribution of a person who became infected on day t  is
-#' 〖 ψ〗_it1,  while the contribution of a person who did not become infected during the entire study
-#' is ψ_iT0, where T is the last day of the study. For a participant who dropped out uninfected, T is replaced
+#' unconditional probabilities psi_itj. The contribution of a person who became infected on day t  is
+#' [psi]_it1,  while the contribution of a person who did not become infected during the entire study
+#' is psi_iT0, where T is the last day of the study. For a participant who dropped out uninfected, T is replaced
 #' by the day s/he dropped out. We can assume that the contributions of different study participants are
 #' independent because we condition on the daily prevalences when we determine the unconditional distribution
 #' of each Y_it. Therefore, the final likelihood function is the product of the contributions of all the study
 #' participants.
 #'
-#' To evaluate waning of TVE, we recall that TVE on day t is 〖1-θ〗_t.  Therefore, temporal changes in TVE
-#' are determined by how θ_t depends on t. A simple approach to modeling TVE as a function of time assumes a
-#' fixed daily increase φ ≥0 in θ_t (which amounts to a fixed daily decrease in TVE), i.e. θ_t=θ_1+φ∙(t-1)
-#' for  t=1,2,…T. Then the likelihood function has 3 parameters: α,θ_1   and φ. One can calculate the maximum
+#' To evaluate waning of TVE, we recall that TVE on day t is [1-theta]_t.  Therefore, temporal changes in TVE
+#' are determined by how theta_t depends on t. A simple approach to modeling TVE as a function of time assumes a
+#' fixed daily increase phi≥0 in theta_t (which amounts to a fixed daily decrease in TVE), i.e. theta_t=theta_1+phi∙(t-1)
+#' for t=1,2,…T. Then the likelihood function has 3 parameters: alpha,theta_1,and phi. One can calculate the maximum
 #' likelihood estimated of these parameters along with their standard errors by maximizing the likelihood
-#' function. One can then test the hypothesis φ=0 to determine the presence of waning and obtain a confidence
-#' interval for φ, the daily rate of TVE waning.
+#' function. One can then test the hypothesis phi=0 to determine the presence of waning and obtain a confidence
+#' interval for phi, the daily rate of TVE waning.
 #' @param dat data set
 #' @param n_days number of days in the study
 #' @param n_periods number of periods in the study
