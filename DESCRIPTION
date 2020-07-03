@@ -19,6 +19,7 @@ Imports:
     splines,
     timereg,
     lazymcmc
+Remotes: jameshay218/lazymcmc
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
