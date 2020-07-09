@@ -18,6 +18,7 @@ Imports:
     foreign,
     splines,
     timereg,
+    openxlsx
     lazymcmc
 Remotes: jameshay218/lazymcmc
 Suggests: 

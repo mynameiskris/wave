@@ -22,13 +22,13 @@ number of times the null hypothesis is rejected
 }
 \description{
 In this method, kernel-weighted partial likelihood approach is used to estimate the time-dependent coefficient
-in the generalized Cox model [REF] .  At each time point, the estimate is obtained by maximizing a smooth
+in the generalized Cox model [REF]. At each time point, the estimate is obtained by maximizing a smooth
 concave function of a p x 1 vector of parameters, where p is the dimension of the vector of covariates. The
-(1-α) confidence bands for the time-dependent coefficient β(t) can be obtained by β(t) ±c_α w ̂〖(t)〗^(-1
-), where t is in the time interval of interest (b_1≤t≤b_2), c_α is the 100(1-α)th percentile the approximate
-distribution of β ̂(t), and w ̂(t) is a positive weighting function. To test the hypothesis of no VE waning
+(1-alpha) confidence bands for the time-dependent coefficient beta(t) can be obtained by beta(t) ±c_alpha w [(t)]^(-1
+), where t is in the time interval of interest (b_1 <=t<=b_2), c_alpha is the 100(1-alpha)th percentile the approximate
+distribution of beta(t)_hat, and w(t)_hat is a positive weighting function. To test the hypothesis of no VE waning
 (i.e., the proportional hazards assumption is met), confidence bands from the distribution of the estimated
-cumulative function of β ̂(t) can be obtained. If the line (0,0) is not contained within the confidence band
+cumulative function of beta(t)_hat) can be obtained. If the line (0,0) is not contained within the confidence band
 s over the entire time interval, then the proportional hazards assumption is not met and the null hypothesis
 of no VE waning is rejected.
 }
