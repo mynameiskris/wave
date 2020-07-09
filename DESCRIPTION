@@ -18,7 +18,7 @@ Imports:
     foreign,
     splines,
     timereg,
-    xlsx
+    openxlsx
 Suggests: 
     testthat (>= 2.1.0),
     knitr,

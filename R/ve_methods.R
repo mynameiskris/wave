@@ -445,12 +445,20 @@ estimate_ve <- function(dat = outcomes_dat, params, write_to_file = TRUE, path =
                mean_mle_params = mean_mle_params)
 
    if(write_to_file){
-     write.xlsx(ve_est, file="output.xlsx",sheetName="ve_estimates", row.names=F )
-     write.xlsx(ve_est, file="output.xlsx",sheetName="mle_parameter_estimates_",append = T, row.names=F )
-     write.xlsx(ve_est, file="output.xlsx",sheetName="reject_h0_prop_",append = T, row.names=F )
-     write.xlsx(ve_est, file="output.xlsx",sheetName="mean_ve",append = T, row.names=F )
-     write.xlsx(ve_est, file="output.xlsx",sheetName="mle_parameter_estimates_",append = T, row.names=F )
+     list_of_datasets <- list("ve_estimates" = rtn$ve_est,
+                              "mle_param_est" = rtn$mle_param_est,
+                              "prop_reject_h0" = rtn$prop_reject_h0,
+                              "mean_ve" = rtn$mean_ve,
+                              "mean_mle_params" = rtn$mean_mle_params
+                              )
+     write.xlsx(list_of_datasets, file = "output.xlsx")
+     # write.xlsx(ve_est, file="output.xlsx",sheetName="ve_estimates", row.names=F )
+     # write.xlsx(ve_est, file="output.xlsx",sheetName="mle_parameter_estimates_",append = T, row.names=F )
+     # write.xlsx(ve_est, file="output.xlsx",sheetName="reject_h0_prop_",append = T, row.names=F )
+     # write.xlsx(ve_est, file="output.xlsx",sheetName="mean_ve",append = T, row.names=F )
+     # write.xlsx(ve_est, file="output.xlsx",sheetName="mle_parameter_estimates_",append = T, row.names=F )
    }
+
 
    return(rtn)
  }
