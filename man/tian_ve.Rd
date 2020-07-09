@@ -21,6 +21,12 @@ tian_ve(dat, n_days, n_periods, n_days_period, alpha = 0.05)
 number of times the null hypothesis is rejected
 }
 \description{
-In this method, kernel-weighted partial likelihood approach is used to estimate the time-dependent coefficient in the generalized Cox model [REF] .  At each time point, the estimate is obtained by maximizing a smooth concave function of a p x 1 vector of parameters, where p is the dimension of the vector of covariates.
+In this method, kernel-weighted partial likelihood approach is used to estimate the time-dependent coefficient
+in the generalized Cox model [REF] .  At each time point, the estimate is obtained by maximizing a smooth
+concave function of a p x 1 vector of parameters, where p is the dimension of the vector of covariates. To test the hypothesis of no VE waning
+(i.e., the proportional hazards assumption is met), confidence bands from the distribution of the estimated
+cumulative function of beta(t) can be obtained. If the line (0,0) is not contained within the confidence band
+s over the entire time interval, then the proportional hazards assumption is not met and the null hypothesis
+of no VE waning is rejected.
 }
 \keyword{wave}

@@ -15,5 +15,3 @@ import(timereg)
 importFrom(stats,runif)
 importFrom(stats,sd)
 importFrom(utils,write.csv)
-import(openxlsx)
-
