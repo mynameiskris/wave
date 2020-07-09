@@ -1,17 +1,17 @@
 # wave
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.org/fluvee/simvee.svg?branch=master)](https://travis-ci.org/fluvee/simvee)
+[![Travis build status](https://travis-ci.org/fluvee/wave.svg?branch=master)](https://travis-ci.org/fluvee/wave)
 <!-- badges: end -->
 
 The goal of wave is to ...
 
 ## Installation
 
-You can install the released version of wave from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of wave from Github with:
 
 ``` r
-install.packages("wave")
+devtools::install_github("fluvee/wave")
 ```
 
 ## Example
