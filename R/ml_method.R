@@ -8,7 +8,7 @@
 #' @return the negative sum of the loglikelihood function
 #' @keywords wave
 #' @export
-logLik <- function(x, par){
+loglik <- function(x, par){
   alpha = par[1]
   theta_0 = par[2]
   phi = par[3]
@@ -115,7 +115,7 @@ ml_ve <- function(dat, n_days, n_periods, n_days_period, latent_period = 1, infe
   # maximum likelihood estimates ----------------------------------------------
   #tryCatch({
   mle <- stats::optim(par = c(0.3, 0.4, 1),
-               fn = logLik,
+               fn = loglik,
                x = x,
                method = "L-BFGS-B",
                lower = c(0.0001, 0.0001, 0.0001),
