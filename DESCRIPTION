@@ -18,10 +18,12 @@ Imports:
     foreign,
     splines,
     timereg,
-    openxlsx
+    openxlsx,
+    lazymcmc
+Remotes: jameshay218/lazymcmc
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

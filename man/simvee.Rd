@@ -24,8 +24,8 @@ the basic model are as follows:
 * lambda_dv= the probability that a participant of vaccination status V=v  who was uninfected at the end of day d-1
   becomes infected on day d. Then the daily hazards of infection for a vaccinee and a non-vaccinees are lambda_d1 and
   lambda_d0, respectively.
-* theta_d=lambda_d1/lambda_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d is
-  1- theta_d.
+* theta_d = lambda_d1/lambda_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d
+  is 1- theta_d.
 }
 \details{
 The simulation program iterates over days. On each day, each susceptible study participant may become infected,

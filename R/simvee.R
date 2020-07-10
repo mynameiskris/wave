@@ -9,8 +9,8 @@
 #' * lambda_dv= the probability that a participant of vaccination status V=v  who was uninfected at the end of day d-1
 #'   becomes infected on day d. Then the daily hazards of infection for a vaccinee and a non-vaccinees are lambda_d1 and
 #'   lambda_d0, respectively.
-#' * theta_d=lambda_d1/lambda_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d is
-#'   1- theta_d.
+#' * theta_d = lambda_d1/lambda_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d
+#'   is 1- theta_d.
 #'
 #' The simulation program iterates over days. On each day, each susceptible study participant may become infected,
 #' and the probability of this event equals to her/his hazard of infection on that day. The input parameters of the
@@ -21,6 +21,8 @@
 #' @param params list of input parameters
 #' @param simNum number of simulations
 #' @return simulated data frame and output files specified in params
+#' @importFrom stats runif sd
+#' @importFrom utils write.csv
 #' @keywords wave
 #' @export
 # main simulation function
@@ -156,7 +158,7 @@ run_simvee <- function(params, path = getwd()){
       write.csv(incidence, paste0(path,'/Daily_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$daily_overall_file == TRUE) {
-      inc_daily_overall <- g_inc %>% group_by(Day,Period) %>% summarise_all(mean, na.rm = TRUE) %>% select(-Sim)
+      inc_daily_overall <- g_inc %>% group_by(.data$Day,.data$Period) %>% summarise_all(mean, na.rm = TRUE) %>% select(-.data$Sim)
       write.csv(inc_daily_overall, paste0(path,'/Daily_overall_',params$title,'.csv'), row.names = FALSE)
     }
     # if (params$period_each_sim_file == TRUE) {
@@ -170,13 +172,13 @@ run_simvee <- function(params, path = getwd()){
     #   write.csv(inc_period_overall, paste0(path,'Period_overall_',params$title,'.csv'), row.names = FALSE)
     # }
     if (params$seasonal_each_sim_file == TRUE) {
-      inc_seasonal_sim <- g_inc %>% group_by(Sim) %>% summarise_all(sum, na.rm = TRUE) %>% select(c(-Day,-Period))
+      inc_seasonal_sim <- g_inc %>% group_by(.data$Sim) %>% summarise_all(sum, na.rm = TRUE) %>% select(c(-.data$Day,-.data$Period))
       write.csv(inc_seasonal_sim, paste0(path,'/Seasonal_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$seasonal_overall_file == TRUE) {
-      inc_seasonal_overall <- g_inc %>% group_by(Sim) %>% summarise_all(sum, na.rm = TRUE) %>%
-                              select(c(-Day,-Period)) %>%  summarize_all(mean, na.rm=TRUE) %>%
-                              select(c(-Sim))
+      inc_seasonal_overall <- g_inc %>% group_by(.data$Sim) %>% summarise_all(sum, na.rm = TRUE) %>%
+                              select(c(-.data$Day,-.data$Period)) %>%  summarize_all(mean, na.rm=TRUE) %>%
+                              select(c(-.data$Sim))
       write.csv(inc_seasonal_overall, paste0(path,'/Seasonal_overall_',params$title,'.csv'), row.names = FALSE)
     }
   }
