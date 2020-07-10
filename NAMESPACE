@@ -2,7 +2,7 @@
 
 export(durham_ve)
 export(estimate_ve)
-export(logLik)
+export(loglik)
 export(ml_ve)
 export(readParams)
 export(simvee)

@@ -8,10 +8,11 @@
 #' @return the negative sum of the loglikelihood function
 #' @keywords wave
 #' @export
-loglik <- function(x, par){
-  alpha = par[1]
-  theta_0 = par[2]
-  phi = par[3]
+loglik <- function(x, pars){
+  names(pars) <- parameter_names
+  alpha = pars["alpha"]
+  theta_0 = pars["theta_0"]
+  phi = pars["phi"]
 
   pi_0u <- pi_0v <- pi_1u <- pi_1v <- c(1,rep(0,x$n_days-1))
   psi_0u <- psi_0v <- psi_1u <- psi_1v <- pi_0u
