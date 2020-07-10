@@ -4,7 +4,7 @@
 #' The ML method is based on calculating the contribution to the likelihood function of each study participant.
 #' See XX for more details.
 #' @param x a list with the information necessary to calculate the likelihood function
-#' @param par parameters to estimate
+#' @param pars parameters to estimate
 #' @return the negative sum of the loglikelihood function
 #' @keywords wave
 #' @export

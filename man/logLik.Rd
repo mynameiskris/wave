@@ -9,7 +9,7 @@ loglik(x, pars)
 \arguments{
 \item{x}{a list with the information necessary to calculate the likelihood function}
 
-\item{par}{parameters to estimate}
+\item{pars}{parameters to estimate}
 }
 \value{
 the negative sum of the loglikelihood function
