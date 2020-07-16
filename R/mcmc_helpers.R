@@ -61,7 +61,7 @@ likelihood_xxx <- function(x, alpha, theta_0, phi){
       if( x$v[i] == 1 ){ lik[i] <- psi_1v[x$dinf[i]] }
     }
   }
-  rtn <- -sum(log(lik))
+  rtn <- sum(log(lik))
   return(rtn)
 }
 
