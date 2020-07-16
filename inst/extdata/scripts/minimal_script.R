@@ -17,11 +17,12 @@
 # source('R/ve_methods.R')
 
 ### Load wave package
-devtools::load_all("~/Documents/wave/")
+# make sure you're in the wave root directory!
+devtools::load_all()
 ### Read parameters from input files
 #   you can specify the folder and file names of the input file within the ""
 #   if no path is specified a window will pop up and allow you to choose a file from your computer
-params <- readParams()
+params <- readParams("./inst/extdata/input/Input_ban_400.csv")
 
 ### run simulation
 #   there is an optional path argument for run_simvee(params, path = )
