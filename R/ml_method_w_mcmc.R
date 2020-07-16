@@ -59,7 +59,7 @@ output <- run_MCMC(parTab = startTab, data = data, mcmcPars = mcmcPars,
 
 # plot results (exclude adaptive period)
 chain <- read.csv(output$file)
-plot(coda::as.mcmc(chain[chain$sampno > mcmcPars["adaptive_period"],]))
+# plot(coda::as.mcmc(chain[chain$sampno > mcmcPars["adaptive_period"],]))
 
 ## Determine mle
 chain1 <- chain[chain$sampno > mcmcPars["adaptive_period"],]
