@@ -15,7 +15,7 @@
 #' @import tidyr
 #' @import lazymcmc
 #' @export
-ml_ve2 <- function(data, params, my_prior = NULL, latent_period = , infectious_period = 4){
+ml_ve2 <- function(data, params, my_prior = NULL, latent_period = 1, infectious_period = 4){
 
 phi <- params$theta_d[1] - params$theta_d[2] + 1
 
