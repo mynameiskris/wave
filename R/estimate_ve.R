@@ -62,8 +62,7 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
 
 # method from Ainslie et al. 2017 ------------------------------------------------------------------------
 
-     temp3 <- ml_ve(outcomes_dat1, n_days = params$ND, n_periods = params$NJ,
-                         n_days_period = params$NDJ, latent_period = 1, infectious_period = 4)
+     temp3 <- ml_ve2(outcomes_dat1, params)
      temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "ML")
      ve_est <- bind_rows(ve_est,temp3a)
 
