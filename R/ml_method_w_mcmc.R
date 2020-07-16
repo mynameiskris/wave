@@ -65,9 +65,12 @@ plot(coda::as.mcmc(chain[chain$sampno > mcmcPars["adaptive_period"],]))
 chain1 <- chain[chain$sampno > mcmcPars["adaptive_period"],]
 max_loglik <- which(chain1$lnlike == max(chain1$lnlike))
 mles <- unique(chain1[max_loglik, c("alpha", "theta_0", "phi")])
+mles[2:3, ] <- apply(chain1[,2:4], 2, function(x) quantile(x, probs = c(0.025,0.975)))
+rownames(mles) <- c("mle", "2.5%", "97.5%")
+mles$lambda <- mles$phi - 1
 
 periods <- rep(1:params$NJ, each = params$NDJ)
-ve_dat <- tibble(day = 1:params$ND, period = periods, ve = 1 - (mles$theta_0 + ((mles$phi - 1) * .data$day))) %>%
+ve_dat <- tibble(day = 1:params$ND, period = periods, ve = 1 - (mles$theta_0 + (mles$lambda * .data$day))) %>%
   select(-.data$day) %>%
   group_by(.data$period) %>%
   summarise_all(.funs = mean) %>%
