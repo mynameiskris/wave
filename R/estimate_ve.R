@@ -25,12 +25,12 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
      print(i)
 
     # subset data for each simulation---------------------------------------------------------------------
-      outcomes_dat1 <- dat %>% filter(.data$Sim == i)
+      dat1 <- dat %>% filter(.data$Sim == i)
 
 # method from Durham et al. 1988 -------------------------------------------------------------------------
 
 # fit ordinary Cox propotional hazards model -------------------------------------------------------------
-  flu_coxmod <- coxph(Surv(DINF_new,FARI) ~ V, data=outcomes_dat1)
+  flu_coxmod <- coxph(Surv(DINF_new,FARI) ~ V, data=dat1)
 
 # test the proportional hazards assumption and compute the Schoenfeld residuals ($y) ---------------------
   flu_zph <- cox.zph(fit = flu_coxmod, transform = "identity")
@@ -52,7 +52,7 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
 
      # calculate VE
      # n_timepoint_breaks argument specifies the number of time points to calculate VE for
-     temp2 <- tian_ve(outcomes_dat1, n_days = params$ND, n_periods = params$NJ,
+     temp2 <- tian_ve(dat1, n_days = params$ND, n_periods = params$NJ,
                       n_days_period = params$NDJ)
      #temp2a <- temp2$output %>% mutate(Sim = i, Method = "Tian")
      #ve_est <- bind_rows(ve_est,temp2a)
@@ -62,7 +62,7 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
 
 # method from Ainslie et al. 2017 ------------------------------------------------------------------------
 
-     temp3 <- ml_ve2(outcomes_dat1, params)
+     temp3 <- ml_ve2(dat1, params)
      temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "ML")
      ve_est <- bind_rows(ve_est,temp3a)
 
