@@ -15,7 +15,8 @@
 #' @import tidyr
 #' @import lazymcmc
 #' @export
-ml_ve2 <- function(data, params, my_prior = NULL, latent_period = 1, infectious_period = 4){
+ml_ve2 <- function(data, params, my_prior = NULL, latent_period = 1, infectious_period = 4,
+                   file_name = "test"){
 
 phi <- params$theta_d[1] - params$theta_d[2] + 1
 
@@ -24,10 +25,10 @@ parTab <- data.frame(values=c(params$alpha_0, params$theta_d[1], phi,
                               infectious_period),
                      names=c("alpha","theta_0","phi", "n_days", "n_periods", "n_days_period",
                              "latent_period", "infectious_period"),
-                     fixed=c(0.0001,0.0001,0.0001,rep(1,5)),
-                     lower_bound=c(rep(0,8)),
+                     fixed=c(0,0,0,rep(1,5)),
+                     steps=c(rep(0.01,8)),
+                     lower_bound=c(rep(0.0001,3),rep(0,5)),
                      upper_bound=c(1,1,2, rep(1000, 5)),
-                     steps=c(0.01,0.01, 0.01, rep(0,5)),
                      stringsAsFactors=FALSE)
 
 ## Quick test
@@ -51,13 +52,29 @@ startTab$values[1:3] <- c(0.5, 0.2, 1.3)
 ## You could have done something like this:
 ## startTab$values <- runif(nrow(startTab), startTab$lower_bound, startTab$upper_bound)
 
-output <- run_MCMC(parTab=startTab, data=data, mcmcPars=mcmcPars,
-                   filename="test",
-                   CREATE_POSTERIOR_FUNC=my_creation_function, mvrPars=NULL,
-                   PRIOR_FUNC = my_prior, OPT_TUNING=0.2)
+output <- run_MCMC(parTab = startTab, data = data, mcmcPars = mcmcPars,
+                   filename = file_name,
+                   CREATE_POSTERIOR_FUNC = my_creation_function, mvrPars = NULL,
+                   PRIOR_FUNC = my_prior, OPT_TUNING = 0.2)
 
 # plot results (exclude adaptive period)
 chain <- read.csv(output$file)
 plot(coda::as.mcmc(chain[chain$sampno > mcmcPars["adaptive_period"],]))
-return(chain)
+
+## Determine mle
+chain1 <- chain[chain$sampno > mcmcPars["adaptive_period"],]
+max_loglik <- which(chain1$lnlike == max(chain1$lnlike))
+mles <- unique(chain1[max_loglik, c("alpha", "theta_0", "phi")])
+
+periods <- rep(1:params$NJ, each = params$NDJ)
+ve_dat <- tibble(day = 1:params$ND, period = periods, ve = 1 - (mles$theta_0 + ((mles$phi - 1) * .data$day))) %>%
+  select(-.data$day) %>%
+  group_by(.data$period) %>%
+  summarise_all(.funs = mean) %>%
+  mutate(ve = ifelse(ve > 1, 1, ve))
+
+# output
+rtn <- list(param_est = mles, ve_dat = ve_dat)
+
+return(rtn)
 }
