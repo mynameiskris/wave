@@ -67,7 +67,7 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
      ve_est <- bind_rows(ve_est,temp3a)
 
      # proportion of sims where null hypothesis is rejected
-     reject_h0_ml <- reject_h0_ml + ifelse(temp3$param_est$lower[3] > 0, 1, 0)
+     reject_h0_ml <- reject_h0_ml + ifelse(temp3$param_est$lambda[2] > 0, 1, 0)
 
      # mle parameter estimates
      temp3b <- temp3$param_est %>% mutate(Sim = i, Method = "ML")
