@@ -5,8 +5,10 @@
 #' efficacy/effectiveness study.
 #' @param dat data set
 #' @param params list of input parameters
-#' @param write_to_file logical. If true, outputs are written to file.
+#' @param write_to_file logical. If true, outputs are written to file
 #' @param path path where files are to be written. Defaults to working directory
+#' @param par_tab data frame of parameters for ML method
+#' @param mcmc_pars vector of MCMC inputs
 #' @return list of VE estimates from each method, maximum likelihood parameter estimates from the ML method for
 #' each simulation, the proportion of times the null hypothesis was rejected for each method, mean VE estimate over simulations
 #' for each time period, and the mean maximum likelihood parameters over all simulations.
@@ -15,8 +17,7 @@
 #' @import dplyr
 #' @import tidyr
 #' @export
-estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), mcmc_pars, par_tab,
-                        start_param_vals = c(0.5, 0.2, 1.3)){
+estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), par_tab, mcmc_pars){
 
 # initialise count of number of simulations in which H0 is rehected --------------------------------------
    reject_h0_durham <- reject_h0_tian <- reject_h0_ml <- 0

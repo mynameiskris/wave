@@ -6,8 +6,9 @@
 #' @param data data set
 #' @param params input parameters
 #' @param my_prior prior function for MCMC
-#' @param latent_period length of latent period
-#' @param infectious_period length of infectious period
+#' @param file_name character string of output file name
+#' @param par_tab data frame of parameter values
+#' @param mcmc_pars vector of MCMC options
 #' @return list with a tibble of VE estimates for each period (the estimate for each period is the average VE over the days
 #' within each period) and the maximu likelihood estimates of the parameters.
 #' @keywords wave

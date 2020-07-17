@@ -73,6 +73,7 @@ likelihood_xxx <- function(x, alpha, theta_0, phi){
 #' @param parTab The parameter table controlling information such as bounds, initial values etc.
 #' @param data The data frame of data to be fitted.
 #' @param PRIOR_FUNC Prior distribution function. If no priors are specified (PRIOR_FUNC = NULL), then the uniform prior of the sampling restrictions will apply from parTab.
+#' @param ... other function arguments
 #' @return the negative sum of the loglikelihood function
 #' @keywords wave
 #' @export
