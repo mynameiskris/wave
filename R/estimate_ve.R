@@ -15,7 +15,8 @@
 #' @import dplyr
 #' @import tidyr
 #' @export
-estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
+estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), mcmc_pars, par_tab,
+                        start_param_vals = c(0.5, 0.2, 1.3)){
 
 # initialise count of number of simulations in which H0 is rehected --------------------------------------
    reject_h0_durham <- reject_h0_tian <- reject_h0_ml <- 0
@@ -62,7 +63,7 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd()){
 
 # method from Ainslie et al. 2017 ------------------------------------------------------------------------
 
-     temp3 <- ml_ve2(dat1, params)
+     temp3 <- ml_ve2(dat1, params, par_tab, mcmc_pars, file_name = params$title)
      temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "ML")
      ve_est <- bind_rows(ve_est,temp3a)
 
