@@ -63,7 +63,7 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), mcmc_
 
 # method from Ainslie et al. 2017 ------------------------------------------------------------------------
 
-     temp3 <- ml_ve2(dat1, params, par_tab, mcmc_pars, file_name = params$title)
+     temp3 <- ml_ve2(dat1, params, par_tab = par_tab, mcmc_pars = mcmc_pars, file_name = params$title)
      temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "ML")
      ve_est <- bind_rows(ve_est,temp3a)
 
