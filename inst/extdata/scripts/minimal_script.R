@@ -38,9 +38,8 @@ outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
                                         DINF_new = ifelse(DINF == 0, 999, DINF))
 
 # define input for ML method with MCMC
-parTab <- data.frame(values=c(params$alpha_0, params$theta_d[1], phi,
-                              params$ND, params$NJ, params$NDJ, latent_period,
-                              infectious_period),
+parTab <- data.frame(values=c(params$alpha_0, params$theta_d[1], params$theta_d[1] - params$theta_d[2] + 1,
+                              params$ND, params$NJ, params$NDJ, 1, 4),
                      names=c("alpha","theta_0","phi", "n_days", "n_periods", "n_days_period",
                              "latent_period", "infectious_period"),
                      fixed=c(0,0,0,rep(1,5)),
