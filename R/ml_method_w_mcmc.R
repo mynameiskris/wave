@@ -15,15 +15,7 @@
 #' @import tidyr
 #' @import lazymcmc
 #' @export
-ml_ve2 <- function(data, params, my_prior = NULL, latent_period = 1, infectious_period = 4,
-                   file_name = "test", par_tab, mcmc_pars){
-
-phi <- params$theta_d[1] - params$theta_d[2] + 1
-
-## Quick test
-#real_pars <- c(parTab$values[1],parTab$values[2],parTab$values[3])
-## Likelihood of true pars
-#print(likelihood_func(pars = real_pars))
+ml_ve2 <- function(data, params, my_prior = NULL, file_name = "test", par_tab, mcmc_pars){
 
 ## The MCMC code uses the parameter table. Here, we should specify some random starting
 ## points in the "values" column.
