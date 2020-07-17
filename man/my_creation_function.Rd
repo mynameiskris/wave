@@ -12,6 +12,8 @@ my_creation_function(parTab, data, PRIOR_FUNC, ...)
 \item{data}{The data frame of data to be fitted.}
 
 \item{PRIOR_FUNC}{Prior distribution function. If no priors are specified (PRIOR_FUNC = NULL), then the uniform prior of the sampling restrictions will apply from parTab.}
+
+\item{...}{other function arguments}
 }
 \value{
 the negative sum of the loglikelihood function

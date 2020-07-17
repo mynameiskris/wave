@@ -88,8 +88,8 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), par_t
      rename(ve_mean = .data$fn1, ve_sd = .data$fn2)
 
    mean_mle_params <- mle_param_est %>%
-     filter(rownames(.) == "mle") %>%
-     select(-Sim, -Method) %>%
+     filter(rownames(.data) == "mle") %>%
+     select(-.data$Sim, -.data$Method) %>%
      summarise_all(.funs = "mean")
 
    rtn <- list(ve_est = ve_est,

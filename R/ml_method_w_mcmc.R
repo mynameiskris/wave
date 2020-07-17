@@ -14,7 +14,8 @@
 #' @keywords wave
 #' @import dplyr
 #' @import tidyr
-#' @import lazymcmc
+#' @importFrom utils read.csv
+#' @importFrom stats quantile
 #' @export
 ml_ve2 <- function(data, params, my_prior = NULL, file_name = "test", par_tab, mcmc_pars){
 
@@ -46,7 +47,7 @@ ve_dat <- tibble(day = 1:params$ND, period = periods, ve = 1 - (mles$theta_0 + (
   select(-.data$day) %>%
   group_by(.data$period) %>%
   summarise_all(.funs = mean) %>%
-  mutate(ve = ifelse(ve > 1, 1, ve))
+  mutate(ve = ifelse(.data$ve > 1, 1, .data$ve))
 
 # output
 rtn <- list(param_est = mles, ve_dat = ve_dat)

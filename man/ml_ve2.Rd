@@ -13,9 +13,11 @@ ml_ve2(data, params, my_prior = NULL, file_name = "test", par_tab, mcmc_pars)
 
 \item{my_prior}{prior function for MCMC}
 
-\item{latent_period}{length of latent period}
+\item{file_name}{character string of output file name}
 
-\item{infectious_period}{length of infectious period}
+\item{par_tab}{data frame of parameter values}
+
+\item{mcmc_pars}{vector of MCMC options}
 }
 \value{
 list with a tibble of VE estimates for each period (the estimate for each period is the average VE over the days
