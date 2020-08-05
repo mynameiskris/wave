@@ -6,21 +6,23 @@
 #' the placebo on the same calendar day, just prior to the onset of the study. The vaccine is assumed ‘leaky’, i.e.,
 #' the hazard of infection of a vaccinated person is a fraction of the hazard of an unvaccinated. The parameters in
 #' the basic model are as follows:
-#' * λ_dv= the probability that a participant of vaccination status V=v  who was uninfected at the end of day d-1
-#'   becomes infected on day d. Then the daily hazards of infection for a vaccinee and a non-vaccinees are λ_d1 and
-#'   λ_d0, respectively.
-#' * θ_d=λ_d1/λ_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d is
-#'   1- θ_d.
+#' * lambda_dv= the probability that a participant of vaccination status V=v  who was uninfected at the end of day d-1
+#'   becomes infected on day d. Then the daily hazards of infection for a vaccinee and a non-vaccinees are lambda_d1 and
+#'   lambda_d0, respectively.
+#' * theta_d = lambda_d1/lambda_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d
+#'   is 1- theta_d.
 #'
 #' The simulation program iterates over days. On each day, each susceptible study participant may become infected,
 #' and the probability of this event equals to her/his hazard of infection on that day. The input parameters of the
-#' simulation program are the daily hazards of infection for unvaccinated persons {λ_d0} and the hazard ratios
-#' {θ_d}. The output is an ‘outcomes file’ with one record for each study participant. This record includes the
+#' simulation program are the daily hazards of infection for unvaccinated persons {lambda_d0} and the hazard ratios
+#' {theta_d}. The output is an ‘outcomes file’ with one record for each study participant. This record includes the
 #' binary vaccination status V, and a variable DINF which gives the day on which s/he became infected. For a
 #' participant who did not become infected during the study, DINF=0.
 #' @param params list of input parameters
 #' @param simNum number of simulations
 #' @return simulated data frame and output files specified in params
+#' @importFrom stats runif sd
+#' @importFrom utils write.csv
 #' @keywords wave
 #' @export
 # main simulation function
@@ -108,6 +110,7 @@ simvee <- function(params, simNum) {
 # function to run simulation and generate incidence report
 run_simvee <- function(params, path = getwd()){
   for (i in 1:params$sim) {
+    print(i)
     results <- simvee(params, i)
 
     if (params$population_report_file == TRUE) {
@@ -156,7 +159,7 @@ run_simvee <- function(params, path = getwd()){
       write.csv(incidence, paste0(path,'/Daily_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$daily_overall_file == TRUE) {
-      inc_daily_overall <- g_inc %>% group_by(Day,Period) %>% summarise_all(mean, na.rm = TRUE) %>% select(-Sim)
+      inc_daily_overall <- g_inc %>% group_by(.data$Day,.data$Period) %>% summarise_all(mean, na.rm = TRUE) %>% select(-.data$Sim)
       write.csv(inc_daily_overall, paste0(path,'/Daily_overall_',params$title,'.csv'), row.names = FALSE)
     }
     # if (params$period_each_sim_file == TRUE) {
@@ -170,13 +173,13 @@ run_simvee <- function(params, path = getwd()){
     #   write.csv(inc_period_overall, paste0(path,'Period_overall_',params$title,'.csv'), row.names = FALSE)
     # }
     if (params$seasonal_each_sim_file == TRUE) {
-      inc_seasonal_sim <- g_inc %>% group_by(Sim) %>% summarise_all(sum, na.rm = TRUE) %>% select(c(-Day,-Period))
+      inc_seasonal_sim <- g_inc %>% group_by(.data$Sim) %>% summarise_all(sum, na.rm = TRUE) %>% select(c(-.data$Day,-.data$Period))
       write.csv(inc_seasonal_sim, paste0(path,'/Seasonal_',params$title,'.csv'), row.names = FALSE)
     }
     if (params$seasonal_overall_file == TRUE) {
-      inc_seasonal_overall <- g_inc %>% group_by(Sim) %>% summarise_all(sum, na.rm = TRUE) %>%
-                              select(c(-Day,-Period)) %>%  summarize_all(mean, na.rm=TRUE) %>%
-                              select(c(-Sim))
+      inc_seasonal_overall <- g_inc %>% group_by(.data$Sim) %>% summarise_all(sum, na.rm = TRUE) %>%
+                              select(c(-.data$Day,-.data$Period)) %>%  summarize_all(mean, na.rm=TRUE) %>%
+                              select(c(-.data$Sim))
       write.csv(inc_seasonal_overall, paste0(path,'/Seasonal_overall_',params$title,'.csv'), row.names = FALSE)
     }
   }

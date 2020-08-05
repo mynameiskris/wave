@@ -21,17 +21,17 @@ a placebo recipient, i.e., an unvaccinated person. We assume that all study part
 the placebo on the same calendar day, just prior to the onset of the study. The vaccine is assumed ‘leaky’, i.e.,
 the hazard of infection of a vaccinated person is a fraction of the hazard of an unvaccinated. The parameters in
 the basic model are as follows:
-* λ_dv= the probability that a participant of vaccination status V=v  who was uninfected at the end of day d-1
-  becomes infected on day d. Then the daily hazards of infection for a vaccinee and a non-vaccinees are λ_d1 and
-  λ_d0, respectively.
-* θ_d=λ_d1/λ_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d is
-  1- θ_d.
+* lambda_dv= the probability that a participant of vaccination status V=v  who was uninfected at the end of day d-1
+  becomes infected on day d. Then the daily hazards of infection for a vaccinee and a non-vaccinees are lambda_d1 and
+  lambda_d0, respectively.
+* theta_d = lambda_d1/lambda_d0  is the ratio of the hazards of a vaccinee and a non-vaccinee on day d. Then the TVE on day d
+  is 1- theta_d.
 }
 \details{
 The simulation program iterates over days. On each day, each susceptible study participant may become infected,
 and the probability of this event equals to her/his hazard of infection on that day. The input parameters of the
-simulation program are the daily hazards of infection for unvaccinated persons {λ_d0} and the hazard ratios
-{θ_d}. The output is an ‘outcomes file’ with one record for each study participant. This record includes the
+simulation program are the daily hazards of infection for unvaccinated persons {lambda_d0} and the hazard ratios
+{theta_d}. The output is an ‘outcomes file’ with one record for each study participant. This record includes the
 binary vaccination status V, and a variable DINF which gives the day on which s/he became infected. For a
 participant who did not become infected during the study, DINF=0.
 }

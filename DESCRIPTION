@@ -1,6 +1,6 @@
 Package: wave
 Title: Waning Vaccine Effectiveness
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person(given = "Kylie",
            family = "Ainslie",
@@ -17,10 +17,14 @@ Imports:
     survival,
     foreign,
     splines,
-    timereg
+    timereg,
+    openxlsx,
+    lazymcmc,
+    stats
+Remotes: jameshay218/lazymcmc
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
