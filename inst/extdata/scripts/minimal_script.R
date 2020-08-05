@@ -31,7 +31,7 @@ outcomes_dat <- run_simvee(params)
 
 ### read in outcomes file
 # you can specify the file name/path of the output file inside ""
-# outcomes_dat <- read.csv(file.choose())
+outcomes_dat <- read.csv("./inst/extdata/output/Outcomes_ban_400.csv")
 
 # add FARI indicator variable
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
