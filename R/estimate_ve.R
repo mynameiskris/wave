@@ -65,14 +65,21 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), par_t
 # method from Ainslie et al. 2017 ------------------------------------------------------------------------
 
      temp3 <- ml_ve2(dat1, params, par_tab = par_tab, mcmc_pars = mcmc_pars, file_name = params$title)
-     temp3a <- temp3$ve_dat %>% mutate(Sim = i, Method = "ML")
+     temp3a <- temp3$ve_dat %>%
+        mutate(Sim = i, Method = "ML")
+
      ve_est <- bind_rows(ve_est,temp3a)
 
      # proportion of sims where null hypothesis is rejected
      reject_h0_ml <- reject_h0_ml + ifelse(temp3$param_est$lambda[2] > 0, 1, 0)
 
      # mle parameter estimates
-     temp3b <- temp3$param_est %>% mutate(Sim = i, Method = "ML")
+     temp3b <- temp3$param_est %>%
+        mutate(Sim = i,
+               Method = "ML",
+               value = c("mle", "quantile_2.5", "quantile_97.5"))
+
+
      if (i > 1){
        mle_param_est <- bind_rows(mle_param_est,temp3b)
      } else {mle_param_est <- temp3b}
@@ -88,8 +95,8 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), par_t
      rename(ve_mean = .data$fn1, ve_sd = .data$fn2)
 
    mean_mle_params <- mle_param_est %>%
-     filter(rownames(.data) == "mle") %>%
-     select(-.data$Sim, -.data$Method) %>%
+     filter(value == "mle") %>%
+     select(-.data$Sim, -.data$Method, -.data$value) %>%
      summarise_all(.funs = "mean")
 
    rtn <- list(ve_est = ve_est,
