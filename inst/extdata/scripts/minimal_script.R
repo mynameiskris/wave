@@ -53,11 +53,11 @@ parTab <- data.frame(values=c(params$alpha_0, params$theta_d[1], params$theta_d[
 ## run for a further 10000 (iterations) steps. Save every nth rows, where n is "thin" (ie. 1 here).
 ## Write to disk every 100 iterations (post thinning). Note that the adaptive period is also saved
 ## to disk
-mcmcPars <- c("iterations"=10000,"popt"=0.44,"opt_freq"=1000,
-              "thin"=1,"adaptive_period"=5000,"save_block"=1000)
+mcmcPars <- c("iterations"=50000,"popt"=0.44,"opt_freq"=1000,
+              "thin"=1,"adaptive_period"=10000,"save_block"=1000)
 
 # apply VE estimation methods
-ve_estimates <- estimate_ve(dat = outcomes_dat, params, par_tab = parTab, mcmc_pars = mcmcPars)
+ve_estimates <- estimate_ve(dat = outcomes_dat1, params, par_tab = parTab, mcmc_pars = mcmcPars)
 
 # print proportion of null hypotheses rejected
 ve_estimates$prop_reject_h0
