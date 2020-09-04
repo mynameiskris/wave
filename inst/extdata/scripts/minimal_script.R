@@ -1,20 +1,14 @@
 # SIMVEE minimal script
-# update: 11 May, 2020
-# time: 18:02
-# install.packages("timereg")
-# install.packages("DEoptim")
-# library(dplyr)
-# library(foreign)
-# library(survival)
-# library(splines)
-# library(timereg)
-# library(ggplot2)
-# library(DEoptim)
+# update: 04 September, 2020
+# time: 13:52
 
-### Source functions from other files
-# source('R/simvee.R')
-# source('R/readParams.R')
-# source('R/ve_methods.R')
+library(dplyr)
+library(foreign)
+library(survival)
+library(splines)
+library(timereg)
+library(ggplot2)
+library(lazymcmc)
 
 ### Load wave package
 # make sure you're in the wave root directory!
@@ -57,7 +51,7 @@ mcmcPars <- c("iterations"=50000,"popt"=0.44,"opt_freq"=1000,
               "thin"=1,"adaptive_period"=10000,"save_block"=1000)
 
 # apply VE estimation methods
-ve_estimates <- estimate_ve(dat = outcomes_dat1, params, par_tab = parTab, mcmc_pars = mcmcPars)
+ve_estimates <- estimate_ve(dat = outcomes_dat, params, par_tab = parTab, mcmc_pars = mcmcPars)
 
 # print proportion of null hypotheses rejected
 ve_estimates$prop_reject_h0
