@@ -39,7 +39,7 @@ parTab <- data.frame(values=c(params$alpha_0, params$theta_d[1], params$theta_d[
                              "latent_period", "infectious_period"),
                      fixed=c(0,0,0,rep(1,5)),
                      steps=c(rep(0.01,8)),
-                     lower_bound=c(rep(0.0001,3),rep(0,5)),
+                     lower_bound=c(rep(0.0001,2), 1,rep(0,5)),
                      upper_bound=c(1,1,2, rep(1000, 5)),
                      stringsAsFactors=FALSE)
 
