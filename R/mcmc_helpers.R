@@ -21,14 +21,14 @@ likelihood_xxx <- function(x, alpha, theta_0, phi){
   for (d in 2:x$n_days){
     if(d %in% period_start_days){period <- period + 1}
     #print(period)
-    lambda <- phi - 1
+    lambda <- ifelse(phi - 1 < 0, 0, phi - 1)
     theta_d <- theta_0 + lambda * period
     alpha_d <- alpha * x$prev[d]
+
     # conditional probabilities: pi_ju & pi_jv, where
     #   j = infection status,
     #   u = unvaccinated,
     #   v = vaccinated
-
     pi_0u[d] <- ifelse(1 - alpha_d < 0, 0.0001, 1 - alpha_d)
     pi_0v[d] <- ifelse(1 - alpha_d * theta_d < 0, 0.0001, 1 - alpha_d * theta_d)
     pi_1u[d] <- alpha_d
