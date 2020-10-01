@@ -28,10 +28,13 @@ likelihood_xxx <- function(x, alpha, theta_0, phi){
     #   j = infection status,
     #   u = unvaccinated,
     #   v = vaccinated
+
     pi_0u[d] <- ifelse(1 - alpha_d < 0, 0.0001, 1 - alpha_d)
     pi_0v[d] <- ifelse(1 - alpha_d * theta_d < 0, 0.0001, 1 - alpha_d * theta_d)
     pi_1u[d] <- alpha_d
-    pi_1v[d] <- ifelse(alpha_d * theta_d > 1, 1, alpha_d * theta_d)
+    pi_1v[d] <- ifelse(alpha_d * theta_d > 1, 1,
+                       ifelse(alpha_d * theta_d < 0, 0.0001, alpha_d * theta_d))
+
     # unconditional probabilities: psi_ju & psi_jv, where
     #   j = infection status,
     #   u = unvaccinated,
@@ -61,6 +64,7 @@ likelihood_xxx <- function(x, alpha, theta_0, phi){
       if( x$v[i] == 1 ){ lik[i] <- psi_1v[x$dinf[i]] }
     }
   }
+  # print(lik)
   rtn <- sum(log(lik))
   return(rtn)
 }
@@ -104,7 +108,8 @@ my_creation_function <- function(parTab, data, PRIOR_FUNC, ...){
     possible_day_of_infection <- (d  - latent_period - infectious_period):(d - latent_period)
     prev[d] <- length(which(data$DINF_new %in% possible_day_of_infection))/N
   }
-  prev <- ifelse(prev == 0, 0.001, prev)
+
+  prev <- ifelse(prev == 0, 0.00001, prev)
 
   x <- list(n = N,
             n_days = n_days,
