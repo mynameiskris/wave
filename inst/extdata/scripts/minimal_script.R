@@ -9,6 +9,7 @@ library(splines)
 library(timereg)
 library(ggplot2)
 library(lazymcmc)
+library(openxlsx)
 
 ### Load wave package
 # make sure you're in the wave root directory!
@@ -16,7 +17,7 @@ devtools::load_all()
 ### Read parameters from input files
 #   you can specify the folder and file names of the input file within the ""
 #   if no path is specified a window will pop up and allow you to choose a file from your computer
-params <- readParams("./inst/extdata/input/Input_ban_400.csv")
+params <- readParams("./inst/extdata/input/Input_ban_406_S10.csv")
 
 ### run simulation
 #   there is an optional path argument for run_simvee(params, path = )
@@ -25,7 +26,7 @@ outcomes_dat <- run_simvee(params)
 
 ### read in outcomes file
 # you can specify the file name/path of the output file inside ""
-outcomes_dat <- read.csv("./inst/extdata/output/Outcomes_ban_400.csv")
+outcomes_dat <- read.csv("./inst/extdata/output/Outcomes_ban_406_S10.csv")
 
 # add FARI indicator variable
 outcomes_dat <- outcomes_dat %>% mutate(FARI = ifelse(DINF == 0, 0, 1),
