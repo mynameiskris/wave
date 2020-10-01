@@ -19,7 +19,7 @@
 #' @export
 estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), par_tab, mcmc_pars){
 
-# initialise count of number of simulations in which H0 is rehected --------------------------------------
+# initialise count of number of simulations in which H0 is rejected --------------------------------------
    reject_h0_durham <- reject_h0_tian <- reject_h0_ml <- 0
 
 # loop through simulations and apply each method ---------------------------------------------------------
@@ -109,11 +109,26 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), par_t
      # write to one excel file and have each output as separate sheet
      list_output <- c("ve_est", "mle_param_est", "prop_reject_h0", "mean_ve", "mean_mle_params")
 
-     for(name in list_output){
-       openxlsx::write.xlsx(x = get(name),
-                            file = paste0(path, "sim_output_", params$title, ".xlsx"),
-                            sheetName = name)
-     }
+     # create workbook
+     wb <- createWorkbook(paste0("sim_output_", params$title, ".xlsx"))
+
+     # add sheets
+     addWorksheet(wb, list_output[1])
+     addWorksheet(wb, list_output[2])
+     addWorksheet(wb, list_output[3])
+     addWorksheet(wb, list_output[4])
+     addWorksheet(wb, list_output[5])
+
+     # add outputs to their sheet
+     writeData(wb, 1, ve_est)
+     writeData(wb, 2, mle_param_est)
+     writeData(wb, 3, prop_reject_h0)
+     writeData(wb, 4, mean_ve)
+     writeData(wb, 5, mean_mle_params)
+
+     # save workbook
+     saveWorkbook(wb, file = paste0("sim_output_", params$title, ".xlsx"), overwrite = TRUE)
+
      # write.csv(prop_reject_h0,file = paste0(path,"reject_h0_prop_",params$title,".csv"))
      # write.csv(mle_param_est, file = paste0(path,"mle_parameter_estimates_",params$title,".csv"))
      # write.csv(mean_ve,file = paste0(path,"mean_ve_estimates_",params$title,".csv"))
