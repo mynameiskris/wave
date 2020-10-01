@@ -23,7 +23,7 @@ estimate_ve <- function(dat, params, write_to_file = TRUE, path = getwd(), par_t
    reject_h0_durham <- reject_h0_tian <- reject_h0_ml <- 0
 
 # loop through simulations and apply each method ---------------------------------------------------------
-   for (i in 1:max(dat$Sim)){
+   for (i in 1:params$sim){
      print(i)
 
     # subset data for each simulation---------------------------------------------------------------------
